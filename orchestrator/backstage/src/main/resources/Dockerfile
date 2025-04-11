@@ -13,6 +13,7 @@ RUN apt-get install -y \
     certbot \
     python3-certbot-nginx \
     curl \
+    coreutils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -37,7 +38,8 @@ timeout 60 certbot certonly --standalone \
   --non-interactive \
   --agree-tos \
   --email admin@orpheum.com.mt \
-  --domains backstage.orpheum.cloud || echo "Certificate generation timed out or failed - will continue anyway" \n\
+  --domains backstage.orpheum.cloud \
+  --deploy-hook "nginx -s reload" || echo "Certificate generation timed out or failed - will continue anyway" \n\
 \n\
 # Start nginx in background \n\
 echo "Starting nginx..." \n\
