@@ -32,6 +32,13 @@ public class CaptivePortalHtmlController {
     @Value("${backstage.portal.auth-timeout-ms}")
     private Long authenticationRequestTimeoutMs;
 
+    @GetMapping(value = "/")
+    public String indexBasic() {
+        log.debug("Access to basic portal detected.");
+        return "index";
+    }
+
+
     @GetMapping(value = "/guest/s/{network}/")
     public String index(Model model,
                         @RequestParam(name="id", required = false) String macAddress,
