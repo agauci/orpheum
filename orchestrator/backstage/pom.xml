@@ -50,6 +50,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>orpheum-backstage-server</finalName>
 		<resources>
 			<!-- Any resources excluded here will not be packaged in the final artifact -->
 			<resource>
@@ -65,35 +66,11 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
 					<execution>
-						<phase>package</phase>
 						<goals>
-							<goal>single</goal>
+							<goal>repackage</goal>
 						</goals>
-						<configuration>
-							<finalName>orpheum-backstage-server</finalName>
-							<archive>
-								<manifest>
-									<mainClass>com.orpheum.orchestrator.backstage.BackstageApplication</mainClass>
-								</manifest>
-							</archive>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-							<appendAssemblyId>false</appendAssemblyId>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>

@@ -1,5 +1,10 @@
 # orpheum
 
+## Backstage Server
+
+Installation:
+- Build the server via command mvn clean package
+
 ## Unifi Agent
 
 Installation:
