@@ -1,0 +1,12 @@
+services:
+  backstage-server:
+    container_name: backstage-server
+    image: backstage-server
+    volumes:
+      - 'c:\dev\backstage\server\nginx\default.conf:/etc/nginx/sites-available/default'
+    environment:
+      - TZ=Europe/Rome
+    ports:
+      - '8080:80'
+      - '8044:443'
+    restart: always
