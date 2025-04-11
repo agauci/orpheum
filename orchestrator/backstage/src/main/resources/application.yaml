@@ -1,0 +1,24 @@
+spring.application.name: orchestrator
+
+server:
+  ssl:
+    key-store: classpath:keystore.p12
+    key-store-password: ManUtd78
+    key-store-type: PKCS12
+    key-alias: backstage.orpheum.cloud
+
+backstage:
+  portal:
+    auth-timeout-ms: 30000
+    auth-thread-pool: 3
+    api-tokens: >
+      ErD96s6KccyHKpKCYPci,
+      txtRFKL9HPeSdsJkhjhk
+
+orpheum:
+  siteConfig:
+    teatru_guest:
+      siteIdentifier: "Teatru Guest"
+      redirectUrl: "https://orpheum.com.mt"
+      backupWifiSsid: "Teatru Guest Backup"
+      backupWifiPassword: "MerhbaFlOrfeju!"

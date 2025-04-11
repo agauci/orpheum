@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Orpheum Malta - Wi-Fi Access</title>
+    <link href="/assets/fonts/PlayFairDisplay.css" rel="stylesheet">
+    <style>
+    html {
+      /* Set the background image permanently */
+      background: url('/assets/background.jpg') no-repeat center center/cover;
+
+      /* Add a base background color that shows during loading */
+      background-color: #2F4858;
+
+      /* Use opacity for the fade-in effect instead */
+      animation: fadeIn 1s ease-in;
+    }
+
+    /* Create a simple fade-in animation for the whole page */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Skip the problematic preloading technique */
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Playfair Display', serif;
+      height: 100%;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.6);
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      /* Add a slightly delayed fade-in for overlay */
+      animation: fadeIn 1s ease-in 0.2s backwards;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      padding: 40px 20px;
+      max-width: 600px;
+      width: 90%;
+
+      /* Add a slight animation for content with delay */
+      animation: slideUp 0.8s ease-out 0.4s backwards;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Rest of your CSS remains unchanged */
+    .logo img {
+      width: 90%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 2.2em;
+      margin-bottom: 20px;
+    }
+
+    p {
+      margin-bottom: 20px;
+      line-height: 1.5em;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+
+    input[type="text"], input[type="email"] {
+      padding: 12px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+    }
+
+    input.invalid {
+      border: 2px solid red;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 0.9em;
+      display: none;
+      margin-top: -10px;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      font-size: 0.9em;
+      margin-top: 10px;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    button {
+      padding: 12px;
+      font-size: 1em;
+      border: none;
+      border-radius: 25px;
+      background-color: #EBECE6;
+      color: #333;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2F4858;
+      color: #fff;
+    }
+
+    #loader {
+      display: none;
+      font-size: 1em;
+      margin-top: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 0.9em;
+    }
+
+    .footer a {
+      color: white;
+      margin: 0 10px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .footer a:hover {
+      color: #E7E6E3;
+    }
+
+    .spinner {
+      margin: 10px;
+      width: 30px;
+      height: 30px;
+      border: 5px solid rgba(0, 0, 0, 0.1);
+      border-top: 5px solid #EBECE6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5em;
+      }
+
+      .logo img {
+        width: 100%;
+        margin-bottom: 0px;
+        margin-top: 20px;
+      }
+
+      button {
+        margin-top: 0px;
+      }
+
+      .footer {
+        margin-top: 20px;
+        font-size: 0.9em;
+      }
+
+      form {
+        margin-bottom: 10px;
+      }
+
+      label {
+        margin-top: 0px;
+      }
+
+      input[type="text"], input[type="email"] {
+        height: 10px;
+        font-size: 0.9em;
+      }
+
+      #loader {
+        margin-top: 0px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="overlay"></div>
+<div class="container">
+    <div class="logo">
+        <img src="/assets/logo.png" alt="The Orpheum Malta">
+    </div>
+    <h1>Welcome to your home away from home.</h1>
+    <p>We’re delighted to welcome you.</p>
+    <p>Please enter your name and email to enjoy our complimentary fast Wi-Fi.<br>
+        You’ll get instant access – plus exclusive offers and return-guest perks.</p>
+
+    <form id="wifi-form" action="/authorise" method="POST">
+        <input type="text" name="firstName" placeholder="First Name" required>
+        <input type="text" name="lastName" placeholder="Last Name" required>
+        <input type="email" name="email" placeholder="Email" required id="email">
+        <div id="email-error" class="error-message">Please enter a valid email address.</div>
+        <label>
+            <input type="checkbox" name="consent" required>
+            I’d like to receive special offers and future stay discounts via email.
+        </label>
+        <button type="submit" id="submit-btn">Connect to Wi-Fi</button>
+        <div id="loader">
+            <div class="spinner" id="spinner" style="display: none"></div>
+            <span>Connecting, please wait ...</span>
+        </div>
+        <input type="hidden" name="id" th:value="${id}" />
+        <input type="hidden" name="ap" th:value="${ap}" />
+        <input type="hidden" name="ssid" th:value="${ssid}" />
+    </form>
+
+    <div class="footer">
+        <a href="/privacy-policy">Privacy Policy</a>   |   <a href="/terms-of-use">Terms Of Use</a>
+    </div>
+</div>
+
+<script>
+    document.getElementById('wifi-form').addEventListener('submit', function(event) {
+      const emailInput = document.getElementById('email');
+      const errorDiv = document.getElementById('email-error');
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(emailInput.value)) {
+        emailInput.classList.add('invalid');
+        errorDiv.style.display = 'block';
+        event.preventDefault();
+        return;
+      } else {
+        emailInput.classList.remove('invalid');
+        errorDiv.style.display = 'none';
+      }
+
+      document.getElementById('loader').style.display = 'flex';
+      document.getElementById('submit-btn').style.display = 'none';
+      document.getElementById('spinner').style.display = 'block';
+    });
+  </script>
+</body>
+</html>

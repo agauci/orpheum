@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Orpheum Malta - Wi-Fi Access</title>
+    <link href="/assets/fonts/PlayFairDisplay.css" rel="stylesheet">
+    <style>
+    html {
+        background: url('/assets/background.jpg') no-repeat center center/cover;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Playfair Display', serif;
+      height: 100%;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.6);
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      padding: 40px 20px;
+      max-width: 600px;
+      width: 90%;
+    }
+
+    .logo img {
+      width: 90%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 2.2em;
+      margin-bottom: 20px;
+    }
+
+    p {
+      margin-bottom: 20px;
+      line-height: 1.5em;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+
+    input[type="text"], input[type="email"] {
+      padding: 12px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+    }
+
+    input.invalid {
+      border: 2px solid red;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 0.9em;
+      display: none;
+      margin-top: -10px;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      font-size: 0.9em;
+      margin-top: 10px;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    button {
+      padding: 12px;
+      font-size: 1em;
+      border: none;
+      border-radius: 25px;
+      background-color: #EBECE6;
+      color: #333;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #2F4858; /* Dark gray background on hover */
+        color: #fff; /* White text on hover */
+    }
+
+    #loader {
+      display: none;
+      font-size: 1em;
+      margin-top: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 0.9em;
+    }
+
+    .footer a {
+      color: white;
+      margin: 0 10px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .footer a:hover {
+      color: #E7E6E3;
+    }
+
+    .spinner {
+      margin: 10px;
+      width: 30px;
+      height: 30px;
+      border: 5px solid rgba(0, 0, 0, 0.1);
+      border-top: 5px solid #EBECE6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5em;
+      }
+
+      .logo img {
+        width: 100%;
+        margin-bottom: 0px;
+        margin-top: 20px;
+      }
+
+      button {
+        margin-top: 0px;
+      }
+
+      .footer {
+        margin-top: 20px;
+        font-size: 0.9em;
+      }
+
+      form {
+        margin-bottom: 10px;
+      }
+
+      label {
+        margin-top: 0px;
+      }
+
+      input[type="text"], input[type="email"] {
+        height: 10px;
+        font-size: 0.9em;
+      }
+
+      #loader {
+        margin-top: 0px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="overlay"></div>
+<div class="container">
+    <div class="logo">
+        <img src="/assets/logo.png" alt="The Orpheum Malta">
+    </div>
+    <h1>Welcome!</h1>
+    <p>You're now connected to [Your Apartment Name]'s Wi-Fi network. Enjoy fast, secure internet access during your stay.</p>
+    <p>You will be redirected shortly...</p>
+
+
+</div>
+<script th:inline="javascript">
+  setTimeout(() => {
+     // Inject dynamic message into JavaScript
+    var redirectUrl = /*[[${redirectUrl}]]*/ 'https://google.com';
+
+    window.location.href = "https://orpheum.com.mt";
+  }, 3000);
+</script>
+</body>
+</html>
