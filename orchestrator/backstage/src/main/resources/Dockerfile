@@ -21,9 +21,9 @@ RUN mkdir -p /var/www/certbot && \
     mkdir -p /orpheum-backstage
 
 # Copy application files
-COPY application.yaml /orpheum-backstage/
-COPY orpheum-backstage-server.jar /orpheum-backstage/
-COPY /nginx/default.conf /etc/nginx/sites-available/default
+COPY /src/main/resources/application.yaml /orpheum-backstage/
+COPY /target/orpheum-backstage-server.jar /orpheum-backstage/
+COPY /src/main/resources/nginx/default.conf /etc/nginx/sites-available/default
 
 # Improved startup script with error handling, logging, and jar execution
 RUN echo '#!/bin/bash \n\

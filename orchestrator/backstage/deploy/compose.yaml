@@ -1,9 +1,7 @@
 services:
   backstage-server:
     container_name: backstage-server
-    image: backstage-server
-    volumes:
-      - 'c:\dev\backstage\server\nginx\default.conf:/etc/nginx/sites-available/default'
+    image: orpheum-backstage-server
     environment:
       - TZ=Europe/Rome
     ports:
