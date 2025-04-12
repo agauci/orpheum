@@ -3,7 +3,9 @@
 ## Backstage Server
 
 Installation:
-- Build the server via command mvn clean package
+- Build the server via command mvn clean install -DskipTests
+- If we are to build a docker image use command mvn clean install -Pdocker -DskipTests
+- If running via docker, go to /backstage/deploy folder and run docker compose up -d
 
 ## Unifi Agent
 
@@ -17,4 +19,10 @@ To check if service is set up correctly:
 - Run systemctl list-units --type=service and check if service is there
 
 To view logs from set up service:
-- Run journalctl -u orpheum-java-unifi-agent -f
+- Run journalctl -u orpheum-unifi-agent.service -f
+
+## TO DO
+- If we migrate from the current docker compose based solution, we'll need to install a systemctl based solution for backstage similar to the agent. Currently, restarts are handled by docker compose.
+- To Limit traffic from general public? 
+	- Remove basic landing page if not using dev profile?
+	

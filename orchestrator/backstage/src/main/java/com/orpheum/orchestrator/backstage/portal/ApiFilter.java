@@ -19,7 +19,9 @@ public class ApiFilter implements Filter {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-            //logRequest(httpRequest);
+            if (!httpRequest.getRequestURI().contains("/portal")) {
+                logRequest(httpRequest);
+            }
 
             chain.doFilter(request, response);
         } else {
