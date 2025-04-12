@@ -39,7 +39,7 @@ timeout 60 certbot certonly --standalone \
   --non-interactive \
   --agree-tos \
   --email admin@orpheum.com.mt \
-  --domains backstage.orpheum.cloud \
+  --domains backstage.orpheum.cloud,opensearch.orpheum.cloud \
   --deploy-hook "nginx -s reload" || echo "Certificate generation timed out or failed - will continue anyway" \n\
 \n\
 # Start nginx in background \n\

@@ -18,7 +18,7 @@ public class CapportApiController {
     public ResponseEntity<Map<String, Object>> getCapportInfo() {
         Map<String, Object> response = new HashMap<>();
         response.put("captive", true); // true if restricted access
-        response.put("user-portal-url", "https://orpheum.backstage.cloud");
+        response.put("user-portal-url", "https://backstage.orpheum.cloud");
         response.put("venue-info-url", "https://orpheum.com.mt");
         response.put("can-extend-session", false);
 
