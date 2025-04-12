@@ -13,6 +13,7 @@ RUN apt-get install -y \
     certbot \
     python3-certbot-nginx \
     curl \
+    vim \
     coreutils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
