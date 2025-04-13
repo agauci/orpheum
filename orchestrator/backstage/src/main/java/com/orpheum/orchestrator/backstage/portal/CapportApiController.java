@@ -1,5 +1,6 @@
 package com.orpheum.orchestrator.backstage.portal;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import java.util.Map;
 public class CapportApiController {
 
     @GetMapping("/captive-portal")
-    public ResponseEntity<Map<String, Object>> getCapportInfo() {
+    public ResponseEntity<Map<String, Object>> getCapportInfo(HttpServletRequest request) {
         Map<String, Object> response = new HashMap<>();
         response.put("captive", true); // true if restricted access
         response.put("user-portal-url", "https://backstage.orpheum.cloud");
