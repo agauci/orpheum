@@ -6,7 +6,7 @@ services:
       - TZ=Europe/Rome
     # This config provides access to generated certificates outside of the docker container
     volumes:
-      - "C:\nginx\certificates\backstage.orpheum.cloud:/etc/letsencrypt/live/backstage.orpheum.cloud"
+      - "C:\\nginx\\certificates\\backstage.orpheum.cloud:/etc/letsencrypt/live/backstage.orpheum.cloud"
     ports:
       - '8080:80'
       - '8044:443'
