@@ -1,11 +1,11 @@
 spring.application.name: orchestrator
 
-#server:
-#  ssl:
-#    key-store: C:\Users\gauci\Google Drive\Keys\Oprheum.cloud\backstage.orpheum.cloud\keystore.p12
-#    key-store-password: ManUtd78
-#    key-store-type: PKCS12
-#    key-alias: backstage.orpheum.cloud
+server:
+  ssl:
+    key-store: C:\Users\gauci\Google Drive\Keys\Oprheum.cloud\backstage.orpheum.cloud\keystore.p12
+    key-store-password: ManUtd78
+    key-store-type: PKCS12
+    key-alias: backstage.orpheum.cloud
 
 backstage:
   portal:

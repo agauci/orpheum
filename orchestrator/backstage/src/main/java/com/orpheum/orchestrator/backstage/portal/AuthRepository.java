@@ -2,15 +2,13 @@ package com.orpheum.orchestrator.backstage.portal;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.orpheum.orchestrator.backstage.portal.model.BackstageAuthenticationRequest;
+import com.orpheum.orchestrator.backstage.portal.model.BackstageAuthorisationRequest;
 import com.orpheum.orchestrator.backstage.portal.model.GatewayAuthenticationOutcome;
-import com.orpheum.orchestrator.backstage.portal.model.GatewayAuthenticationOutcomeStatus;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -25,13 +23,13 @@ public final class AuthRepository {
     @Value("${backstage.portal.auth-thread-pool}")
     private Integer authThreadPoolSize;
 
-    private final Cache<String, BackstageAuthenticationRequest> ongoingAuthentications = Caffeine.newBuilder()
+    private final Cache<String, BackstageAuthorisationRequest> ongoingAuthentications = Caffeine.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)
             .build();
     private final Map<String, CompletableFuture<GatewayAuthenticationOutcome>> pendingAuthenticationRequests = new ConcurrentHashMap<>();
     private ExecutorService threadPool;
 
-    public synchronized void add(BackstageAuthenticationRequest request) {
+    public synchronized void add(BackstageAuthorisationRequest request) {
         if (Optional.ofNullable(ongoingAuthentications.getIfPresent(request.id()))
                 .map(req -> PRE_AUTH.equals(req.status())).orElse(false)) {
             log.debug("Ignoring request since matching entry already found. [Request = {}, Ongoing authentications = {}]", request, ongoingAuthentications);
@@ -42,8 +40,8 @@ public final class AuthRepository {
         }
     }
 
-    public List<BackstageAuthenticationRequest> getPendingAuthentications(String siteIdentifier) {
-        final List<BackstageAuthenticationRequest> authenticatedRequests = ongoingAuthentications.asMap().values().stream()
+    public List<BackstageAuthorisationRequest> getPendingAuthentications(String siteIdentifier) {
+        final List<BackstageAuthorisationRequest> authenticatedRequests = ongoingAuthentications.asMap().values().stream()
                 .filter(request -> AUTHENTICATED.equals(request.status()) && siteIdentifier.equals(request.siteIdentifier()))
                 .toList();
 
@@ -52,8 +50,8 @@ public final class AuthRepository {
         return authenticatedRequests;
     }
 
-    public CompletableFuture<GatewayAuthenticationOutcome> authoriseRequest(String macAddress, String accessPointMacAddress, String siteIdentifier) {
-        BackstageAuthenticationRequest resolvedRequest = ongoingAuthentications.getIfPresent(BackstageAuthenticationRequest.id(macAddress, accessPointMacAddress, siteIdentifier));
+    public CompletableFuture<GatewayAuthenticationOutcome> authoriseRequest(String macAddress, String accessPointMacAddress, String siteIdentifier, String ip) {
+        BackstageAuthorisationRequest resolvedRequest = ongoingAuthentications.getIfPresent(BackstageAuthorisationRequest.id(macAddress, accessPointMacAddress, ip, siteIdentifier));
 
         if (resolvedRequest == null || !PRE_AUTH.equals(resolvedRequest.status())) {
             log.warn("Unable to find pre authenticated backstage request, or found request not in expected state. [Request: {}]", resolvedRequest);
@@ -63,10 +61,11 @@ public final class AuthRepository {
 
         log.debug("Resolved the following pending authentication request. [Request: {}]", resolvedRequest);
 
-        final BackstageAuthenticationRequest updatedRequest = new BackstageAuthenticationRequest(
+        final BackstageAuthorisationRequest updatedRequest = new BackstageAuthorisationRequest(
                 resolvedRequest.macAddress(),
                 resolvedRequest.accessPointMacAddress(),
                 resolvedRequest.siteIdentifier(),
+                resolvedRequest.ip(),
                 resolvedRequest.timestamp(),
                 AUTHENTICATED
         );
@@ -80,7 +79,7 @@ public final class AuthRepository {
     }
 
     public void onAuthorizationOutcome(GatewayAuthenticationOutcome outcome) {
-        BackstageAuthenticationRequest request = ongoingAuthentications.getIfPresent(outcome.request().id());
+        BackstageAuthorisationRequest request = ongoingAuthentications.getIfPresent(outcome.request().id());
 
         if (request != null) {
             CompletableFuture<GatewayAuthenticationOutcome> pendingCompletableFuture = pendingAuthenticationRequests.get(request.id());

@@ -27,7 +27,7 @@ COPY /src/main/resources/application.yaml /orpheum-backstage/
 COPY /target/orpheum-backstage-server.jar /orpheum-backstage/
 COPY /src/main/resources/nginx/default.conf /etc/nginx/sites-available/default
 
-# Improved startup script with error handling, logging, and jar execution
+# Startup script with error handling, logging, and jar execution
 RUN echo '#!/bin/bash \n\
 set -e \n\
 \n\
@@ -39,7 +39,7 @@ timeout 60 certbot certonly --standalone \
   --non-interactive \
   --agree-tos \
   --email admin@orpheum.com.mt \
-  --domains backstage.orpheum.cloud,opensearch.orpheum.cloud,backoffice.orpheum.cloud,aura.orpheum.cloud \
+  --domains backstage.orpheum.cloud,opensearch.orpheum.cloud,backoffice.orpheum.cloud,aura.orpheum.cloud,teatru.orpheum.cloud \
   --deploy-hook "nginx -s reload" || echo "Certificate generation timed out or failed - will continue anyway" \n\
 \n\
 # Start nginx in background \n\

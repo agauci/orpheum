@@ -2,8 +2,8 @@ package com.orpheum.orchestrator.unifiAgent.support;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.orpheum.orchestrator.unifiAgent.model.BackstageAuthenticationRequest;
-import com.orpheum.orchestrator.unifiAgent.model.GatewayAuthenticationOutcome;
+import com.orpheum.orchestrator.unifiAgent.model.BackstageAuthorisationRequest;
+import com.orpheum.orchestrator.unifiAgent.model.GatewayAuthorisationOutcome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +17,9 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
 
+/**
+ * Encapsulates API calls to the backstage server
+ */
 public class BackstageClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BackstageClient.class);
@@ -36,12 +39,12 @@ public class BackstageClient {
         }
     }
 
-    public static List<BackstageAuthenticationRequest> getPendingAuthenticatedRequests() throws IOException, InterruptedException {
+    public static List<BackstageAuthorisationRequest> getPendingAuthenticatedRequests() throws IOException, InterruptedException {
         LOGGER.trace("Attempting request to retrieve pending authentication requests from backstage.");
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(GET_URL))
-                .header("X-Auth-Token", ApplicationProperties.getString("api_auth_token"))
+                .header("X-Auth-Token", ApplicationProperties.getString("backstage_api_auth_token"))
                 .timeout(Duration.ofMillis(ApplicationProperties.getInteger("request_timeout")))
                 .GET()
                 .build();
@@ -52,19 +55,19 @@ public class BackstageClient {
             throw new IllegalStateException(String.format("Backstage GET request failed! Status code: %s, Headers: %s, Body: %s", response.statusCode(), response.headers(), response.body()));
         }
 
-        final List<BackstageAuthenticationRequest> retrievedRequests = MAPPER.readValue(response.body(), new TypeReference<List<BackstageAuthenticationRequest>>() {});
+        final List<BackstageAuthorisationRequest> retrievedRequests = MAPPER.readValue(response.body(), new TypeReference<List<BackstageAuthorisationRequest>>() {});
 
         LOGGER.trace("Successfully completed GET backstage request. [Retrieved requests = {}]", retrievedRequests);
 
         return retrievedRequests;
     }
 
-    public static void notifyAuthenticationOutcome(final GatewayAuthenticationOutcome outcome) throws IOException, InterruptedException {
+    public static void notifyAuthenticationOutcome(final GatewayAuthorisationOutcome outcome) throws IOException, InterruptedException {
         LOGGER.debug("Attempting request to notify authentication outcome. [Outcome={}]", outcome);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(CONFIRM_URL))
-                .header("X-Auth-Token", ApplicationProperties.getString("api_auth_token"))
+                .header("X-Auth-Token", ApplicationProperties.getString("backstage_api_auth_token"))
                 .header("Content-Type", "application/json")
                 .timeout(Duration.ofMillis(ApplicationProperties.getInteger("request_timeout")))
                 .POST(HttpRequest.BodyPublishers.ofString(MAPPER.writeValueAsString(outcome)))
