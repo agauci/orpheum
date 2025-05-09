@@ -120,6 +120,7 @@ public class CaptivePortalHtmlController {
         if (SUCCESS.equals(authOutcome.outcome())) {
             log.info("Successfully completed gateway authentication request with outcome {}", authOutcome);
             model.addAttribute("redirectUrl", siteConfigDetails.get().getRedirectUrl());
+            model.addAttribute("siteIdentifier", siteConfigDetails.get().getSiteIdentifier());
 
             return "success";
         } else {
