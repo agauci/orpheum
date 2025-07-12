@@ -1,6 +1,6 @@
 package com.orpheum.orchestrator.backstage.portal.model.auth;
 
-public enum GatewayAuthenticationOutcomeStatus {
+public enum GatewayAuthorisationOutcomeStatus {
 
     SUCCESS,
     FAILED

@@ -1,0 +1,4 @@
+CREATE TABLE heartbeat (
+    id BIGSERIAL PRIMARY KEY,
+    heartbeat_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);

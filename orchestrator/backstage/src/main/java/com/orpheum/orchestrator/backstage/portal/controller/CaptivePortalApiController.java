@@ -1,7 +1,7 @@
 package com.orpheum.orchestrator.backstage.portal.controller;
 
 import com.orpheum.orchestrator.backstage.portal.model.auth.BackstageAuthorisationRequest;
-import com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthenticationOutcome;
+import com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthorisationOutcome;
 import com.orpheum.orchestrator.backstage.portal.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class CaptivePortalApiController {
 
     @PostMapping("/portal")
     public ResponseEntity<String> postOutcome(@RequestHeader("X-Auth-Token") String authToken,
-                                              @RequestBody GatewayAuthenticationOutcome outcome) {
+                                              @RequestBody GatewayAuthorisationOutcome outcome) {
         log.debug("Received gateway authorization outcome notification. [Outcome: {}]", outcome);
 
         authService.onAuthorizationOutcome(outcome, authToken);

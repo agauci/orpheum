@@ -1,8 +1,6 @@
 package com.orpheum.orchestrator.backstage.portal.controller;
 
-import com.orpheum.orchestrator.backstage.portal.model.auth.BackstageAuthorisationRequest;
-import com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthenticationOutcome;
-import com.orpheum.orchestrator.backstage.portal.repository.AuthRepository;
+import com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthorisationOutcome;
 import com.orpheum.orchestrator.backstage.portal.service.AuthService;
 import com.orpheum.orchestrator.backstage.portal.support.PortalConfig;
 import com.orpheum.orchestrator.backstage.portal.support.PortalConfig.SiteConfigDetails;
@@ -19,9 +17,8 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import static com.orpheum.orchestrator.backstage.portal.model.auth.BackstageAuthenticationRequestStatus.PRE_AUTH;
-import static com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthenticationOutcomeStatus.FAILED;
-import static com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthenticationOutcomeStatus.SUCCESS;
+import static com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthorisationOutcomeStatus.FAILED;
+import static com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthorisationOutcomeStatus.SUCCESS;
 
 /**
  * A controller for HTML pages constituting the backstage captive portal. The two core parts of functionality found here
@@ -50,7 +47,6 @@ public class CaptivePortalHtmlController {
         return "index";
     }
 
-
     @GetMapping(value = "/guest/s/{network}/")
     public String index(Model model,
                         @RequestParam(name="id", required = false) String macAddress,
@@ -60,12 +56,13 @@ public class CaptivePortalHtmlController {
                         @RequestParam(name="ssid", required = false) String siteIdentifier) {
         log.debug("Received portal GET request. [MAC: {}, AP: {}, ip: {}, timestamp: {}, siteIdentifier: {}]", macAddress, accessPointMacAddress, ip, timestamp, siteIdentifier);
 
-        if (macAddress != null) {
-            authService.store(macAddress, accessPointMacAddress, timestamp, ip, siteIdentifier);
+        if (macAddress != null || ip != null) {
             model.addAttribute("id", macAddress);
             model.addAttribute("ap", accessPointMacAddress);
             model.addAttribute("ip", ip);
             model.addAttribute("ssid", siteIdentifier);
+            model.addAttribute("t", timestamp);
+            model.addAttribute("consentText", portalConfig.getConsentText());
         }
 
         return "index";
@@ -80,12 +77,13 @@ public class CaptivePortalHtmlController {
                             @RequestParam(name="ssid", required = false) String siteIdentifier) {
         log.debug("Received portal POST request. [MAC: {}, AP: {}, ip: {}, timestamp: {}, siteIdentifier: {}]", macAddress, accessPointMacAddress, ip, timestamp, siteIdentifier);
 
-        if (macAddress != null) {
-            authService.store(macAddress, accessPointMacAddress, timestamp, ip, siteIdentifier);
+        if (macAddress != null || ip != null) {
             model.addAttribute("id", macAddress);
             model.addAttribute("ap", accessPointMacAddress);
             model.addAttribute("ip", ip);
             model.addAttribute("ssid", siteIdentifier);
+            model.addAttribute("t", timestamp);
+            model.addAttribute("consentText", portalConfig.getConsentText());
         }
 
         return "index";
@@ -99,23 +97,31 @@ public class CaptivePortalHtmlController {
                             @RequestParam(name="id", required = false) String macAddress,
                             @RequestParam(name="ap", required = false) String accessPointMacAddress,
                             @RequestParam(name="ip", required = false) String ip,
-                            @RequestParam(name="ssid") String siteIdentifier) throws ExecutionException, InterruptedException {
+                            @RequestParam(name="ssid") String siteIdentifier,
+                            @RequestParam(name="t") Long timestamp) throws ExecutionException, InterruptedException {
         log.debug("Received portal authorise request. [MAC Address: {}, Access Point MAC Address: {}, IP: {}, Site Identifier: {}, First name: {}, last name: {}, email: {}]",
                 macAddress, accessPointMacAddress, ip, siteIdentifier, firstName, lastName, email);
 
-        Optional<GatewayAuthenticationOutcome> validationOutcome = validate(macAddress, accessPointMacAddress, ip);
+        Optional<GatewayAuthorisationOutcome> validationOutcome = validate(macAddress, accessPointMacAddress, ip);
         if (validationOutcome.isPresent()) {
             return processFailureOutcome(model, validationOutcome.get());
         }
-
-        final GatewayAuthenticationOutcome authOutcome = authRepository.authoriseRequest(macAddress, accessPointMacAddress, siteIdentifier, ip)
-                .completeOnTimeout(new GatewayAuthenticationOutcome(null, FAILED, "Authentication request timed out. Please try again later."), authenticationRequestTimeoutMs, TimeUnit.MILLISECONDS)
-                .get();
-
         Optional<SiteConfigDetails> siteConfigDetails = portalConfig.getSiteConfigBySiteIdentifier(siteIdentifier);
         if (siteConfigDetails.isEmpty()) {
-            return processFailureOutcome(model, new GatewayAuthenticationOutcome(null, FAILED, "Missing site configuration for " + siteIdentifier));
+            return processFailureOutcome(model, new GatewayAuthorisationOutcome(null, FAILED, "Missing site configuration for " + siteIdentifier));
         }
+
+        final GatewayAuthorisationOutcome authOutcome = authService.startAuthorisation(macAddress,
+                                                                                       accessPointMacAddress,
+                                                                                       timestamp,
+                                                                                       ip,
+                                                                                       siteIdentifier,
+                                                                                       firstName,
+                                                                                       lastName,
+                                                                                       email,
+                                                                                       siteConfigDetails.get())
+                .completeOnTimeout(new GatewayAuthorisationOutcome(null, FAILED, "Authentication request timed out. Please try again later."), authenticationRequestTimeoutMs, TimeUnit.MILLISECONDS)
+                .get();
 
         if (SUCCESS.equals(authOutcome.outcome())) {
             log.info("Successfully completed gateway authentication request with outcome {}", authOutcome);
@@ -146,7 +152,7 @@ public class CaptivePortalHtmlController {
         return "error";
     }
 
-    private String processFailureOutcome(Model model, GatewayAuthenticationOutcome authOutcome) {
+    private String processFailureOutcome(Model model, GatewayAuthorisationOutcome authOutcome) {
         model.addAttribute("errorMessage", authOutcome.message());
         model.addAttribute("backupWifiSsid", portalConfig.getBackupWifiSsid());
         model.addAttribute("backupWifiPassword", portalConfig.getBackupWifiPassword());
@@ -155,13 +161,13 @@ public class CaptivePortalHtmlController {
         return "error";
     }
 
-    private Optional<GatewayAuthenticationOutcome> validate(final String macAddress, final String apMacAddress, final String ip) {
+    private Optional<GatewayAuthorisationOutcome> validate(final String macAddress, final String apMacAddress, final String ip) {
         if (isNullOrEmpty(macAddress) && isNullOrEmpty(apMacAddress) && isNullOrEmpty(ip))  {
-            return Optional.of(new GatewayAuthenticationOutcome(null, FAILED, "The MAC address, access point MAC address and IP address are all missing"));
+            return Optional.of(new GatewayAuthorisationOutcome(null, FAILED, "The MAC address, access point MAC address and IP address are all missing"));
         }
 
         if (isNullOrEmpty(ip) && (isNullOrEmpty(macAddress) || isNullOrEmpty(apMacAddress)))  {
-            return Optional.of(new GatewayAuthenticationOutcome(null, FAILED, "If either MAC address is provided, the other MAC address is also necessary."));
+            return Optional.of(new GatewayAuthorisationOutcome(null, FAILED, "If either MAC address is provided, the other MAC address is also necessary."));
         }
 
         return Optional.empty();

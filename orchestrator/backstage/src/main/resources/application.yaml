@@ -25,6 +25,9 @@ spring:
 #    key-alias: backstage.orpheum.cloud
 
 backstage:
+  heartbeat:
+    # Write a heartbeat entry every 6 hours
+    period-ms: 21600000
   portal:
     auth-timeout-ms: 30000
     auth-thread-pool: 3
@@ -40,3 +43,4 @@ orpheum:
       friendlyName: "Teatru"
   backupWifiSsid: "Orpheum Backup"
   backupWifiPassword: "MerhbaFlOrfeju!"
+  consentText: "I’d like to receive special offers and future stay discounts via email."

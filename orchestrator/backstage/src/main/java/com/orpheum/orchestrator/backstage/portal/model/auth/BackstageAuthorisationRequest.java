@@ -1,16 +1,11 @@
 package com.orpheum.orchestrator.backstage.portal.model.auth;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public record BackstageAuthorisationRequest(
         String macAddress,
         String accessPointMacAddress,
         String siteIdentifier,
         String ip,
-        Long timestamp,
-        @JsonIgnore
-        BackstageAuthenticationRequestStatus status) {
+        Long timestamp) {
 
     public String id() {
         return BackstageAuthorisationRequest.id(macAddress, accessPointMacAddress, ip, siteIdentifier);

@@ -17,6 +17,7 @@ public class PortalConfig {
     private Map<String, SiteConfigDetails> siteConfig;
     private String backupWifiSsid;
     private String backupWifiPassword;
+    private String consentText;
 
     public Optional<SiteConfigDetails> getSiteConfigBySiteIdentifier(final String siteIdentifier) {
         return siteConfig.entrySet().stream()
