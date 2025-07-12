@@ -1,4 +1,4 @@
-package com.orpheum.orchestrator.backstage.portal.model;
+package com.orpheum.orchestrator.backstage.portal.model.auth;
 
 public record GatewayAuthenticationOutcome(BackstageAuthorisationRequest request, GatewayAuthenticationOutcomeStatus outcome, String message) {
 

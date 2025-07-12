@@ -1,9 +1,9 @@
-package com.orpheum.orchestrator.backstage.portal;
+package com.orpheum.orchestrator.backstage.portal.repository;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.orpheum.orchestrator.backstage.portal.model.BackstageAuthorisationRequest;
-import com.orpheum.orchestrator.backstage.portal.model.GatewayAuthenticationOutcome;
+import com.orpheum.orchestrator.backstage.portal.model.auth.BackstageAuthorisationRequest;
+import com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthenticationOutcome;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static com.orpheum.orchestrator.backstage.portal.model.BackstageAuthenticationRequestStatus.AUTHENTICATED;
-import static com.orpheum.orchestrator.backstage.portal.model.BackstageAuthenticationRequestStatus.PRE_AUTH;
-import static com.orpheum.orchestrator.backstage.portal.model.GatewayAuthenticationOutcomeStatus.FAILED;
+import static com.orpheum.orchestrator.backstage.portal.model.auth.BackstageAuthenticationRequestStatus.AUTHENTICATED;
+import static com.orpheum.orchestrator.backstage.portal.model.auth.BackstageAuthenticationRequestStatus.PRE_AUTH;
+import static com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthenticationOutcomeStatus.FAILED;
 
 @Component
 @Slf4j
@@ -23,25 +23,25 @@ public final class AuthRepository {
     @Value("${backstage.portal.auth-thread-pool}")
     private Integer authThreadPoolSize;
 
-    private final Cache<String, BackstageAuthorisationRequest> ongoingAuthentications = Caffeine.newBuilder()
+    private final Cache<String, BackstageAuthorisationRequest> ongoingAuthorisations = Caffeine.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)
             .build();
     private final Map<String, CompletableFuture<GatewayAuthenticationOutcome>> pendingAuthenticationRequests = new ConcurrentHashMap<>();
     private ExecutorService threadPool;
 
     public synchronized void add(BackstageAuthorisationRequest request) {
-        if (Optional.ofNullable(ongoingAuthentications.getIfPresent(request.id()))
+        if (Optional.ofNullable(ongoingAuthorisations.getIfPresent(request.id()))
                 .map(req -> PRE_AUTH.equals(req.status())).orElse(false)) {
-            log.debug("Ignoring request since matching entry already found. [Request = {}, Ongoing authentications = {}]", request, ongoingAuthentications);
+            log.debug("Ignoring request since matching entry already found. [Request = {}, Ongoing authentications = {}]", request, ongoingAuthorisations);
         } else {
-            log.debug("Adding new authentication request {}. Current set: {}", request, ongoingAuthentications);
+            log.debug("Adding new authentication request {}. Current set: {}", request, ongoingAuthorisations);
 
-            ongoingAuthentications.put(request.id(), request);
+            ongoingAuthorisations.put(request.id(), request);
         }
     }
 
     public List<BackstageAuthorisationRequest> getPendingAuthentications(String siteIdentifier) {
-        final List<BackstageAuthorisationRequest> authenticatedRequests = ongoingAuthentications.asMap().values().stream()
+        final List<BackstageAuthorisationRequest> authenticatedRequests = ongoingAuthorisations.asMap().values().stream()
                 .filter(request -> AUTHENTICATED.equals(request.status()) && siteIdentifier.equals(request.siteIdentifier()))
                 .toList();
 
@@ -51,7 +51,7 @@ public final class AuthRepository {
     }
 
     public CompletableFuture<GatewayAuthenticationOutcome> authoriseRequest(String macAddress, String accessPointMacAddress, String siteIdentifier, String ip) {
-        BackstageAuthorisationRequest resolvedRequest = ongoingAuthentications.getIfPresent(BackstageAuthorisationRequest.id(macAddress, accessPointMacAddress, ip, siteIdentifier));
+        BackstageAuthorisationRequest resolvedRequest = ongoingAuthorisations.getIfPresent(BackstageAuthorisationRequest.id(macAddress, accessPointMacAddress, ip, siteIdentifier));
 
         if (resolvedRequest == null || !PRE_AUTH.equals(resolvedRequest.status())) {
             log.warn("Unable to find pre authenticated backstage request, or found request not in expected state. [Request: {}]", resolvedRequest);
@@ -69,8 +69,8 @@ public final class AuthRepository {
                 resolvedRequest.timestamp(),
                 AUTHENTICATED
         );
-        ongoingAuthentications.put(resolvedRequest.id(), updatedRequest);
-        log.debug("Marked authentication request for gateway authentication. [Request: {}, Ongoing Authentications: {}]", updatedRequest, ongoingAuthentications);
+        ongoingAuthorisations.put(resolvedRequest.id(), updatedRequest);
+        log.debug("Marked authentication request for gateway authentication. [Request: {}, Ongoing Authentications: {}]", updatedRequest, ongoingAuthorisations);
 
         CompletableFuture<GatewayAuthenticationOutcome> pendingAuthRequest = new CompletableFuture<>();
         pendingAuthenticationRequests.put(resolvedRequest.id(), pendingAuthRequest);
@@ -79,7 +79,7 @@ public final class AuthRepository {
     }
 
     public void onAuthorizationOutcome(GatewayAuthenticationOutcome outcome) {
-        BackstageAuthorisationRequest request = ongoingAuthentications.getIfPresent(outcome.request().id());
+        BackstageAuthorisationRequest request = ongoingAuthorisations.getIfPresent(outcome.request().id());
 
         if (request != null) {
             CompletableFuture<GatewayAuthenticationOutcome> pendingCompletableFuture = pendingAuthenticationRequests.get(request.id());
@@ -91,8 +91,8 @@ public final class AuthRepository {
                     // Signal to any pending HTTP request that the outcome has been received
                     pendingCompletableFuture.complete(outcome);
                     // Remove the ongoing authentication from the store
-                    ongoingAuthentications.invalidate(request.id());
-                    log.debug("Removed authentication request. [Request = {}, Set = {}]", request, ongoingAuthentications);
+                    ongoingAuthorisations.invalidate(request.id());
+                    log.debug("Removed authentication request. [Request = {}, Set = {}]", request, ongoingAuthorisations);
                 });
             } else {
                 log.debug("Unable to resolve corresponding completable future for outcome. Any associated pending authorization request will time out. [Outcome: {}]", outcome);

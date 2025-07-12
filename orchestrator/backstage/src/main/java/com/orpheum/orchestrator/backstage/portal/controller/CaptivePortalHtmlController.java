@@ -1,27 +1,27 @@
-package com.orpheum.orchestrator.backstage.portal;
+package com.orpheum.orchestrator.backstage.portal.controller;
 
-import com.orpheum.orchestrator.backstage.portal.model.BackstageAuthorisationRequest;
-import com.orpheum.orchestrator.backstage.portal.model.GatewayAuthenticationOutcome;
+import com.orpheum.orchestrator.backstage.portal.model.auth.BackstageAuthorisationRequest;
+import com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthenticationOutcome;
+import com.orpheum.orchestrator.backstage.portal.repository.AuthRepository;
+import com.orpheum.orchestrator.backstage.portal.service.AuthService;
 import com.orpheum.orchestrator.backstage.portal.support.PortalConfig;
 import com.orpheum.orchestrator.backstage.portal.support.PortalConfig.SiteConfigDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import static com.orpheum.orchestrator.backstage.portal.model.BackstageAuthenticationRequestStatus.PRE_AUTH;
-import static com.orpheum.orchestrator.backstage.portal.model.GatewayAuthenticationOutcomeStatus.FAILED;
-import static com.orpheum.orchestrator.backstage.portal.model.GatewayAuthenticationOutcomeStatus.SUCCESS;
+import static com.orpheum.orchestrator.backstage.portal.model.auth.BackstageAuthenticationRequestStatus.PRE_AUTH;
+import static com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthenticationOutcomeStatus.FAILED;
+import static com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthenticationOutcomeStatus.SUCCESS;
 
 /**
  * A controller for HTML pages constituting the backstage captive portal. The two core parts of functionality found here
@@ -36,7 +36,7 @@ import static com.orpheum.orchestrator.backstage.portal.model.GatewayAuthenticat
 public class CaptivePortalHtmlController {
 
     @Autowired
-    AuthRepository authRepository;
+    AuthService authService;
 
     @Autowired
     PortalConfig portalConfig;
@@ -61,7 +61,7 @@ public class CaptivePortalHtmlController {
         log.debug("Received portal GET request. [MAC: {}, AP: {}, ip: {}, timestamp: {}, siteIdentifier: {}]", macAddress, accessPointMacAddress, ip, timestamp, siteIdentifier);
 
         if (macAddress != null) {
-            authRepository.add(new BackstageAuthorisationRequest(macAddress, accessPointMacAddress, siteIdentifier, ip, timestamp, PRE_AUTH));
+            authService.store(macAddress, accessPointMacAddress, timestamp, ip, siteIdentifier);
             model.addAttribute("id", macAddress);
             model.addAttribute("ap", accessPointMacAddress);
             model.addAttribute("ip", ip);
@@ -81,7 +81,7 @@ public class CaptivePortalHtmlController {
         log.debug("Received portal POST request. [MAC: {}, AP: {}, ip: {}, timestamp: {}, siteIdentifier: {}]", macAddress, accessPointMacAddress, ip, timestamp, siteIdentifier);
 
         if (macAddress != null) {
-            authRepository.add(new BackstageAuthorisationRequest(macAddress, accessPointMacAddress, siteIdentifier, ip, timestamp, PRE_AUTH));
+            authService.store(macAddress, accessPointMacAddress, timestamp, ip, siteIdentifier);
             model.addAttribute("id", macAddress);
             model.addAttribute("ap", accessPointMacAddress);
             model.addAttribute("ip", ip);

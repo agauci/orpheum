@@ -1,11 +1,10 @@
-package com.orpheum.orchestrator.backstage.portal;
+package com.orpheum.orchestrator.backstage.portal.controller;
 
-import com.orpheum.orchestrator.backstage.portal.model.BackstageAuthorisationRequest;
-import com.orpheum.orchestrator.backstage.portal.model.GatewayAuthenticationOutcome;
+import com.orpheum.orchestrator.backstage.portal.model.auth.BackstageAuthorisationRequest;
+import com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthenticationOutcome;
+import com.orpheum.orchestrator.backstage.portal.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,34 +26,22 @@ import java.util.List;
 public class CaptivePortalApiController {
 
     @Autowired
-    AuthRepository authRepository;
-
-    @Value("${backstage.portal.api-tokens}")
-    private List<String> apiTokens;
+    AuthService authService;
 
     @GetMapping("/portal")
     public ResponseEntity<List<BackstageAuthorisationRequest>> list(@RequestHeader("X-Auth-Token") String authToken,
                                                                     @RequestParam(name= "site_identifier") String siteIdentifier) {
         log.trace("Received gateway list request. [Site Identifier: {}]", siteIdentifier);
-        if (!apiTokens.contains(authToken)) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-        }
-        final List<BackstageAuthorisationRequest> resolvedAuthentications = authRepository.getPendingAuthentications(siteIdentifier);
-        log.trace("Resolved {} pending authentication requests. [Requests: {}]", resolvedAuthentications.size(), resolvedAuthentications);
 
-        return ResponseEntity.ok(resolvedAuthentications);
+        return ResponseEntity.ok(authService.getPendingAuthorisations(siteIdentifier, authToken));
     }
 
     @PostMapping("/portal")
     public ResponseEntity<String> postOutcome(@RequestHeader("X-Auth-Token") String authToken,
                                               @RequestBody GatewayAuthenticationOutcome outcome) {
         log.debug("Received gateway authorization outcome notification. [Outcome: {}]", outcome);
-        if (!apiTokens.contains(authToken)) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-        }
 
-        authRepository.onAuthorizationOutcome(outcome);
-
+        authService.onAuthorizationOutcome(outcome, authToken);
         return ResponseEntity.ok("");
     }
 

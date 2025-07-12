@@ -193,10 +193,7 @@
 </div>
 <script th:inline="javascript">
   setTimeout(() => {
-     // Inject dynamic message into JavaScript
-    var redirectUrl = /*[[${redirectUrl}]]*/ 'https://google.com';
-
-    window.location.href = "https://orpheum.com.mt";
+     window.location.href = [[${redirectUrl}]];
   }, 3000);
 </script>
 </body>

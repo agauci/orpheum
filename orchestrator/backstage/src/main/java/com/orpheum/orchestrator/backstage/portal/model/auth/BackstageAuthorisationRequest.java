@@ -1,4 +1,4 @@
-package com.orpheum.orchestrator.backstage.portal.model;
+package com.orpheum.orchestrator.backstage.portal.model.auth;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

@@ -20,7 +20,7 @@ public final class BackstageAuthRepository {
     private static final Set<BackstageAuthorisationRequest> ongoingAuthentications = Collections.synchronizedSet(new HashSet<>());
 
     public static List<BackstageAuthorisationRequest> merge(List<BackstageAuthorisationRequest> backstageAuthorisationRequests) {
-        LOGGER.debug("Received pending gateway authenticated requests {}. Current set: {}", backstageAuthorisationRequests, ongoingAuthentications);
+        LOGGER.trace("Received pending gateway authenticated requests {}. Current set: {}", backstageAuthorisationRequests, ongoingAuthentications);
 
         Map<Boolean, List<BackstageAuthorisationRequest>> duplicateEntriesPartition = backstageAuthorisationRequests.stream()
                 .collect(Collectors.partitioningBy(ongoingAuthentications::contains));

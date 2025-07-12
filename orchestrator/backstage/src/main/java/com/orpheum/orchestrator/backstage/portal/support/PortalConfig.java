@@ -30,5 +30,6 @@ public class PortalConfig {
     public static class SiteConfigDetails {
         private String siteIdentifier;
         private String redirectUrl;
+        private String friendlyName;
     }
 }
