@@ -1,6 +1,8 @@
 package com.orpheum.orchestrator.unifiAgent.support;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.IThrowableProxy;
+import ch.qos.logback.classic.spi.ThrowableProxyUtil;
 import ch.qos.logback.core.AppenderBase;
 import com.orpheum.orchestrator.unifiAgent.model.BackstageLogEntry;
 
@@ -35,12 +37,20 @@ public class BackstageGatewayLogAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent eventObject) {
+        // Extract stacktrace if throwable is present
+        String stacktrace = null;
+        IThrowableProxy throwableProxy = eventObject.getThrowableProxy();
+        if (throwableProxy != null) {
+            stacktrace = ThrowableProxyUtil.asString(throwableProxy);
+        }
+
         BackstageLogEntry logEvent = new BackstageLogEntry(
                 eventObject.getFormattedMessage(),
                 eventObject.getTimeStamp(),
                 eventObject.getLevel().toString(),
                 eventObject.getLoggerName(),
-                SITE_FRIENDLY_NAME
+                SITE_FRIENDLY_NAME,
+                stacktrace
         );
 
         eventBuffer.add(logEvent);

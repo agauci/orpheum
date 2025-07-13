@@ -20,7 +20,7 @@ public class GatewayLogService {
     private List<String> apiTokens;
 
     /**
-     * Processes a single log entry by adding the site friendly name to MDC
+     * Processes a single log entry by adding the site-friendly name to MDC
      * and logging the message with the appropriate log level.
      *
      * @param apiToken The received API token
@@ -33,7 +33,7 @@ public class GatewayLogService {
             // Get a logger with the name from the log entry
             Logger logger = LoggerFactory.getLogger(logEntry.getLoggerName());
 
-            // Add site friendly name to MDC
+            // Add site-friendly name to MDC
             String siteFriendlyName = logEntry.getSiteFriendlyName();
             MDC.put(SITE_FRIENDLY_NAME_MDC_KEY, siteFriendlyName);
 
@@ -41,34 +41,34 @@ public class GatewayLogService {
             switch (logEntry.getLogLevel().toUpperCase()) {
                 case "TRACE":
                     if (logger.isTraceEnabled()) {
-                        logger.trace(enrichMessage(siteFriendlyName, logEntry.getMessage()));
+                        logger.trace(enrichMessage(siteFriendlyName, logEntry.getMessage(), logEntry.getStacktrace()));
                     }
                     break;
                 case "DEBUG":
                     if (logger.isDebugEnabled()) {
-                        logger.debug(enrichMessage(siteFriendlyName, logEntry.getMessage()));
+                        logger.debug(enrichMessage(siteFriendlyName, logEntry.getMessage(), logEntry.getStacktrace()));
                     }
                     break;
                 case "INFO":
                     if (logger.isInfoEnabled()) {
-                        logger.info(enrichMessage(siteFriendlyName, logEntry.getMessage()));
+                        logger.info(enrichMessage(siteFriendlyName, logEntry.getMessage(), logEntry.getStacktrace()));
                     }
                     break;
                 case "WARN":
                     if (logger.isWarnEnabled()) {
-                        logger.warn(enrichMessage(siteFriendlyName, logEntry.getMessage()));
+                        logger.warn(enrichMessage(siteFriendlyName, logEntry.getMessage(), logEntry.getStacktrace()));
                     }
                     break;
                 case "ERROR":
                     if (logger.isErrorEnabled()) {
-                        logger.error(enrichMessage(siteFriendlyName, logEntry.getMessage()));
+                        logger.error(enrichMessage(siteFriendlyName, logEntry.getMessage(), logEntry.getStacktrace()));
                     }
                     break;
                 default:
                     // Default to WARN level if the level is not recognized
                     if (logger.isWarnEnabled()) {
                         MDC.put(UNRECOGNISED_LEVEL_MDC_KEY, logEntry.getLogLevel().toUpperCase());
-                        logger.warn(enrichMessage(siteFriendlyName, logEntry.getMessage()));
+                        logger.warn(enrichMessage(siteFriendlyName, logEntry.getMessage(), logEntry.getStacktrace()));
                     }
                     break;
             }
@@ -78,8 +78,14 @@ public class GatewayLogService {
         }
     }
 
-    private String enrichMessage(final String message, final String siteFriendlyName) {
-        return "[" + siteFriendlyName + "] " + message;
+    private String enrichMessage(final String siteFriendlyName, final String message, final String stacktrace) {
+        String enrichedMessage = "[" + siteFriendlyName + "] " + message;
+
+        if (stacktrace != null && !stacktrace.isEmpty()) {
+            enrichedMessage = enrichedMessage + "\n" + stacktrace;
+        }
+
+        return enrichedMessage;
     }
 
     private void validateAuthToken(String authToken) {
