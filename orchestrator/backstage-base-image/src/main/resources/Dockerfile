@@ -31,3 +31,4 @@ RUN dpkg -i otelcol_0.128.0_linux_amd64.deb
 COPY /src/main/resources/nginx/default.conf /etc/nginx/sites-available/default
 COPY /src/main/resources/otel/config.yaml /etc/otelcol/config.yaml
 COPY /src/main/resources/start.sh /start.sh
+RUN chmod +x /start.sh

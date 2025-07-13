@@ -151,7 +151,7 @@
 							<verbose>true</verbose>
 							<images>
 								<image>
-									<name>orpheum-backstage-server:latest</name>
+									<name>orpheum/backstage-server:latest</name>
 									<build>
 										<dockerFile>${project.basedir}/src/main/resources/Dockerfile</dockerFile>
 										<contextDir>${project.basedir}</contextDir>
