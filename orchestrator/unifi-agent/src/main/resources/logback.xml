@@ -36,6 +36,7 @@
     <appender name="ASYNC_BATCH_API" class="com.orpheum.orchestrator.unifiAgent.support.BackstageGatewayLogAppender">
         <batchSize>20</batchSize>
         <timeoutMillis>10000</timeoutMillis> <!-- 10 seconds -->
+        <maxRetryCount>3</maxRetryCount>
     </appender>
 
     <!-- Root Logger -->

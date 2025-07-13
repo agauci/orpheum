@@ -35,8 +35,6 @@ public class GatewayLoggerController {
     @PostMapping("/gateway/logs")
     public ResponseEntity<String> receiveLogs(@RequestHeader("X-Auth-Token") String authToken,
                                               @RequestBody List<LogEntry> logEntries) {
-        log.debug("Received {} log entries from gateway", logEntries.size());
-
         for (LogEntry logEntry : logEntries) {
             gatewayLogService.processLogEntry(authToken, logEntry);
         }

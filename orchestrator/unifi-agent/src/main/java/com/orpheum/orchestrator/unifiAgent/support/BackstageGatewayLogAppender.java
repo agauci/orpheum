@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class BackstageGatewayLogAppender extends AppenderBase<ILoggingEvent> {
@@ -17,12 +18,14 @@ public class BackstageGatewayLogAppender extends AppenderBase<ILoggingEvent> {
 
     private int batchSize;
     private long timeoutMillis;
+    private int maxRetryCount;
 
     private final List<BackstageLogEntry> eventBuffer = Collections.synchronizedList(new ArrayList<>());
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
 
     private final AtomicLong lastSentTime = new AtomicLong(System.currentTimeMillis());
     private final AtomicBoolean sendingInProgress = new AtomicBoolean(false);
+    private final AtomicInteger retryCount = new AtomicInteger(0);
 
     @Override
     public void start() {
@@ -61,15 +64,23 @@ public class BackstageGatewayLogAppender extends AppenderBase<ILoggingEvent> {
     }
 
     private void sendLogs() {
+        List<BackstageLogEntry> pendingLogs = new ArrayList<>(eventBuffer);
+        boolean success = false;
         try {
-            List<BackstageLogEntry> pendingLogs = new ArrayList<>(eventBuffer);
             if (!pendingLogs.isEmpty()) {
-                eventBuffer.removeAll(pendingLogs);
                 BackstageClient.sendLogs(pendingLogs);
             }
+            success = true;
         } catch (Exception e) {
+            retryCount.incrementAndGet();
             addError("Failed to send logs", e);
         } finally {
+            if (success || retryCount.get() >= maxRetryCount) {
+                if (!pendingLogs.isEmpty()) {
+                    eventBuffer.removeAll(pendingLogs);
+                }
+                retryCount.set(0);
+            }
             lastSentTime.set(System.currentTimeMillis());
             sendingInProgress.set(false);
         }
@@ -90,4 +101,7 @@ public class BackstageGatewayLogAppender extends AppenderBase<ILoggingEvent> {
         this.timeoutMillis = timeoutMillis;
     }
 
+    public void setMaxRetryCount(int maxRetryCount) {
+        this.maxRetryCount = maxRetryCount;
+    }
 }

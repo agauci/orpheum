@@ -34,40 +34,41 @@ public class GatewayLogService {
             Logger logger = LoggerFactory.getLogger(logEntry.getLoggerName());
 
             // Add site friendly name to MDC
-            MDC.put(SITE_FRIENDLY_NAME_MDC_KEY, logEntry.getSiteFriendlyName());
+            String siteFriendlyName = logEntry.getSiteFriendlyName();
+            MDC.put(SITE_FRIENDLY_NAME_MDC_KEY, siteFriendlyName);
 
             // Log the message with the appropriate log level
             switch (logEntry.getLogLevel().toUpperCase()) {
                 case "TRACE":
                     if (logger.isTraceEnabled()) {
-                        logger.trace(logEntry.getMessage());
+                        logger.trace(enrichMessage(siteFriendlyName, logEntry.getMessage()));
                     }
                     break;
                 case "DEBUG":
                     if (logger.isDebugEnabled()) {
-                        logger.debug(logEntry.getMessage());
+                        logger.debug(enrichMessage(siteFriendlyName, logEntry.getMessage()));
                     }
                     break;
                 case "INFO":
                     if (logger.isInfoEnabled()) {
-                        logger.info(logEntry.getMessage());
+                        logger.info(enrichMessage(siteFriendlyName, logEntry.getMessage()));
                     }
                     break;
                 case "WARN":
                     if (logger.isWarnEnabled()) {
-                        logger.warn(logEntry.getMessage());
+                        logger.warn(enrichMessage(siteFriendlyName, logEntry.getMessage()));
                     }
                     break;
                 case "ERROR":
                     if (logger.isErrorEnabled()) {
-                        logger.error(logEntry.getMessage());
+                        logger.error(enrichMessage(siteFriendlyName, logEntry.getMessage()));
                     }
                     break;
                 default:
                     // Default to WARN level if the level is not recognized
                     if (logger.isWarnEnabled()) {
                         MDC.put(UNRECOGNISED_LEVEL_MDC_KEY, logEntry.getLogLevel().toUpperCase());
-                        logger.warn(logEntry.getMessage());
+                        logger.warn(enrichMessage(siteFriendlyName, logEntry.getMessage()));
                     }
                     break;
             }
@@ -75,6 +76,10 @@ public class GatewayLogService {
             // Always clear the MDC to prevent leaking context
             MDC.clear();
         }
+    }
+
+    private String enrichMessage(final String message, final String siteFriendlyName) {
+        return "[" + siteFriendlyName + "] " + message;
     }
 
     private void validateAuthToken(String authToken) {
