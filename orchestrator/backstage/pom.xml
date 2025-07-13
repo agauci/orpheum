@@ -93,6 +93,7 @@
 						<directory>src/main/resources</directory>
 						<excludes>
 							<exclude>application.yaml</exclude>
+							<exclude>logback.xml</exclude>
 						</excludes>
 						<filtering>false</filtering>
 					</resource>

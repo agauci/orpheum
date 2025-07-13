@@ -24,6 +24,7 @@ RUN mkdir -p /var/www/certbot && \
 
 # Copy application files
 COPY /src/main/resources/application.yaml /orpheum-backstage/
+COPY /src/main/resources/logback.xml /orpheum-backstage/
 COPY /target/orpheum-backstage-server.jar /orpheum-backstage/
 COPY /src/main/resources/nginx/default.conf /etc/nginx/sites-available/default
 
@@ -49,7 +50,7 @@ nginx \n\
 # Start the Java application \n\
 echo "Starting Orpheum Backstage application..." \n\
 cd /orpheum-backstage \n\
-exec java -jar orpheum-backstage-server.jar --spring.config.location=application.yaml \n\
+exec java -Dlogback.configurationFile=logback.xml -jar orpheum-backstage-server.jar --spring.config.location=application.yaml \n\
 ' > /start.sh && chmod +x /start.sh
 
 # Expose ports
