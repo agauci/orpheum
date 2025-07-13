@@ -8,10 +8,9 @@
     </appender>
 
     <appender name="OTLP" class="io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender">
-        <!-- Change endpoint to your OTLP receiver (default gRPC port 4317 or HTTP port 4318) -->
-        <endpoint>http://localhost:4317</endpoint>
-        <resourceAttributes>service.name=backstage</resourceAttributes>
-        <minimumLogLevel>DEBUG</minimumLogLevel>
+        <captureExperimentalAttributes>true</captureExperimentalAttributes>
+        <captureKeyValuePairAttributes>true</captureKeyValuePairAttributes>
+        <captureMdcAttributes>*</captureMdcAttributes>
     </appender>
 
     <root level="INFO">
