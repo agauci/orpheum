@@ -10,7 +10,6 @@ public class ApplicationProperties {
 
     private static final Properties props = init();
 
-
     public static Properties getProperties() {
         return props;
     }

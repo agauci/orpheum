@@ -32,14 +32,22 @@
         </filter>
     </appender>
 
+    <!-- Async Batching API Appender -->
+    <appender name="ASYNC_BATCH_API" class="com.orpheum.orchestrator.unifiAgent.support.BackstageGatewayLogAppender">
+        <batchSize>20</batchSize>
+        <timeoutMillis>10000</timeoutMillis> <!-- 10 seconds -->
+    </appender>
+
     <!-- Root Logger -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
+        <appender-ref ref="ASYNC_BATCH_API" />
     </root>
 
     <!-- Fine-tune package-level logging -->
     <logger name="com.orpheum" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE" />
+        <appender-ref ref="ASYNC_BATCH_API" />
         <!-- Logs will be filtered further to WARN+ via a ThresholdFilter above -->
         <appender-ref ref="FILE" />
     </logger>

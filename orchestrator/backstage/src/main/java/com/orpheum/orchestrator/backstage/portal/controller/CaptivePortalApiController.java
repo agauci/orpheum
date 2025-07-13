@@ -19,7 +19,6 @@ import java.util.List;
  *     in turn completes a pending /authorise API call, therefore reporting the outcome back to the user.</li>
  * </ul>
  *
- *
  */
 @RestController
 @Slf4j
