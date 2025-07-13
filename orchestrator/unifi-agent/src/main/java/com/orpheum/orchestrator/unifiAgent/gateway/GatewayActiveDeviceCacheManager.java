@@ -10,13 +10,14 @@ import com.orpheum.orchestrator.unifiAgent.support.UnifiGatewayClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static com.orpheum.orchestrator.unifiAgent.model.UnifiGatewayActiveDevice.resolveMacsKey;
 
 /**
  * A class which manages the agent's internal cache around authenticated devices by
@@ -65,7 +66,14 @@ public class GatewayActiveDeviceCacheManager implements Runnable {
         try {
             connection = GatewayAuthConnectionManager.borrowConnection();
 
-            cacheAuthorizedDevices(UnifiGatewayClient.getActiveDevices(connection));
+            final List<UnifiGatewayActiveDevice> authorizedDevices =
+                    filterForAuthorizedDevices(UnifiGatewayClient.getActiveDevices(connection));
+
+            // Add any new devices to the caches first
+            authorizedDevices.forEach(this::addAuthorisedDeviceToCache);
+            // Remove any entries from the caches which are no longer authorised on the gateway's end
+            removeUnauthorisedDevicesFromIPCache(authorizedDevices);
+            removeUnauthorisedDevicesFromMacsCache(authorizedDevices);
         } catch (Exception e) {
             LOGGER.error("Unexpected exception encountered. Skipping run.", e);
         } finally {
@@ -81,26 +89,52 @@ public class GatewayActiveDeviceCacheManager implements Runnable {
     }
 
     public Optional<UnifiGatewayActiveDevice> resolveAuthorisedCachedDeviceByMacs(String mac, String ap_mac) {
-        return Optional.ofNullable(authorisedDeviceCacheByIp.getIfPresent(buildMacsKey(mac, ap_mac)));
+        return Optional.ofNullable(authorisedDeviceCacheByIp.getIfPresent(resolveMacsKey(mac, ap_mac)));
     }
 
-    public void addAuthorisedCachedDevice(UnifiGatewayActiveDevice device) {
+    public void addAuthorisedDeviceToCache(UnifiGatewayActiveDevice device) {
         if (authorisedDeviceCacheByIp.getIfPresent(device.resolveIp()) == null) {
             LOGGER.debug("Added authorised device to cache by IP. [Device:{}]", device);
             authorisedDeviceCacheByIp.put(device.resolveIp(), device);
         }
-        if (authorisedDeviceCacheByMacs.getIfPresent(buildMacsKey(device)) == null) {
+        if (authorisedDeviceCacheByMacs.getIfPresent(device.resolveMacsKey()) == null) {
             LOGGER.debug("Added authorised device to cache by MACs. [Device:{}]", device);
-            authorisedDeviceCacheByMacs.put(buildMacsKey(device), device);
+            authorisedDeviceCacheByMacs.put(device.resolveMacsKey(), device);
         }
     }
 
-    private String buildMacsKey(UnifiGatewayActiveDevice device) {
-        return buildMacsKey(device.id(), device.ap_mac());
+    private void removeUnauthorisedDevicesFromIPCache(List<UnifiGatewayActiveDevice> devices) {
+        // Resolve all devices still authorised within the Unifi Gateway
+        Set<String> authorisedDeviceIps = devices.stream()
+                .map(UnifiGatewayActiveDevice::resolveIp)
+                .collect(Collectors.toSet());
+        // Resolve IPs within cache for devices still considered as authorised
+        Set<String> cachedAuthorisedDeviceIps = new HashSet<>(authorisedDeviceCacheByIp.asMap().keySet());
+        // Remove all devices which are still authorised within the gateway
+        cachedAuthorisedDeviceIps.removeAll(authorisedDeviceIps);
+        // Invalidate all entries which are in the cache but not authorised in the gateway
+        cachedAuthorisedDeviceIps.forEach(deviceIpToRemove -> {
+            UnifiGatewayActiveDevice device = authorisedDeviceCacheByIp.getIfPresent(deviceIpToRemove);
+            LOGGER.debug("Removing device from cache by IP. [Device:{}]", device);
+            authorisedDeviceCacheByIp.invalidate(deviceIpToRemove);
+        });
     }
 
-    private String buildMacsKey(String mac, String ap_mac) {
-        return mac + ":" + ap_mac;
+    private void removeUnauthorisedDevicesFromMacsCache(List<UnifiGatewayActiveDevice> devices) {
+        // Resolve all devices still authorised within the Unifi Gateway
+        Set<String> authorisedDeviceMacKeys = devices.stream()
+                .map(UnifiGatewayActiveDevice::resolveMacsKey)
+                .collect(Collectors.toSet());
+        // Resolve Macs within cache for devices still considered as authorised
+        Set<String> cachedAuthorisedDeviceMacs = new HashSet<>(authorisedDeviceCacheByMacs.asMap().keySet());
+        // Remove all devices which are still authorised within the gateway
+        cachedAuthorisedDeviceMacs.removeAll(authorisedDeviceMacKeys);
+        // Invalidate all entries which are in the cache but not authorised in the gateway
+        cachedAuthorisedDeviceMacs.forEach(deviceMacsKeyToRemove -> {
+            UnifiGatewayActiveDevice device = authorisedDeviceCacheByMacs.getIfPresent(deviceMacsKeyToRemove);
+            LOGGER.debug("Removing device from cache by MACs. [Device:{}]", device);
+            authorisedDeviceCacheByMacs.invalidate(deviceMacsKeyToRemove);
+        });
     }
 
     public Optional<UnifiGatewayActiveDevice> resolveDeviceByIp(String ip) {
@@ -120,7 +154,7 @@ public class GatewayActiveDeviceCacheManager implements Runnable {
     private Optional<UnifiGatewayActiveDevice> resolve(Callable<Optional<UnifiGatewayActiveDevice>> cacheResolver,
                                                        Function<List<UnifiGatewayActiveDevice>, Optional<UnifiGatewayActiveDevice>> listResolver) {
         try {
-            Optional<UnifiGatewayActiveDevice>  cachedDevice = cacheResolver.call();
+            Optional<UnifiGatewayActiveDevice> cachedDevice = cacheResolver.call();
             if (cachedDevice.isPresent()) {
                 return cachedDevice;
             }
@@ -137,7 +171,7 @@ public class GatewayActiveDeviceCacheManager implements Runnable {
 
                 List<UnifiGatewayActiveDevice> activeDevices = UnifiGatewayClient.getActiveDevices(connection);
                 // Only cache if authorised
-                cacheAuthorizedDevices(activeDevices);
+                filterForAuthorizedDevices(activeDevices).forEach(this::addAuthorisedDeviceToCache);
 
                 Optional<UnifiGatewayActiveDevice> unifiGatewayActiveDevice = listResolver.apply(activeDevices);
 
@@ -175,10 +209,10 @@ public class GatewayActiveDeviceCacheManager implements Runnable {
                 .findFirst();
     }
 
-    private void cacheAuthorizedDevices(final List<UnifiGatewayActiveDevice> devices) {
-        devices.stream()
-               .filter(device -> device.authorized() && SITE_IDENTIFIER.equals(device.essid()))
-               .forEach(this::addAuthorisedCachedDevice);
+    private List<UnifiGatewayActiveDevice> filterForAuthorizedDevices(final List<UnifiGatewayActiveDevice> devices) {
+        return devices.stream()
+                .filter(device -> device.authorized() && SITE_IDENTIFIER.equals(device.essid()))
+                .toList();
     }
 
     public List<UnifiGatewayActiveDevice> getAuthorisedDevicesView() {

@@ -23,8 +23,8 @@ import static com.orpheum.orchestrator.backstage.portal.model.auth.GatewayAuthor
 /**
  * A controller for HTML pages constituting the backstage captive portal. The two core parts of functionality found here
  * involve (i) capturing a device's call on the captive portal - in turn forwarding IP or MAC address information to
- * identify the said device with the gateway, and (ii) triggering an authoriseation from the captive portal, which in
- * turn exposes a pending backstge authorisation for the respective agent to consume and execute. The latter endpoint
+ * identify the said device with the gateway, and (ii) triggering an authorisation from the captive portal, which in
+ * turn exposes a pending backstage authorisation for the respective agent to consume and execute. The latter endpoint
  * also captures any identifiable information exposed by the user (such as names and emails), thus completing the intent
  * of the captive portal.
  */
@@ -39,7 +39,7 @@ public class CaptivePortalHtmlController {
     PortalConfig portalConfig;
 
     @Value("${backstage.portal.auth-timeout-ms}")
-    private Long authenticationRequestTimeoutMs;
+    private Long authorisationRequestTimeoutMs;
 
     @GetMapping(value = "/")
     public String indexBasic() {
@@ -120,7 +120,7 @@ public class CaptivePortalHtmlController {
                                                                                        lastName,
                                                                                        email,
                                                                                        siteConfigDetails.get())
-                .completeOnTimeout(new GatewayAuthorisationOutcome(null, FAILED, "Authentication request timed out. Please try again later."), authenticationRequestTimeoutMs, TimeUnit.MILLISECONDS)
+                .completeOnTimeout(new GatewayAuthorisationOutcome(null, FAILED, "Authentication request timed out. Please try again later."), authorisationRequestTimeoutMs, TimeUnit.MILLISECONDS)
                 .get();
 
         if (SUCCESS.equals(authOutcome.outcome())) {

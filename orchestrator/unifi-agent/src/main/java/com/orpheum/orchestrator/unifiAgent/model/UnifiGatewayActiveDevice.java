@@ -24,4 +24,12 @@ public record UnifiGatewayActiveDevice(String id, String ap_mac, String ip, Stri
         return (fixed_ip != null) ? fixed_ip : ip;
     }
 
+    public String resolveMacsKey() {
+        return resolveMacsKey(id, ap_mac);
+    }
+
+    public static String resolveMacsKey(String mac, String ap_mac) {
+        return mac + ":" + ap_mac;
+    }
+
 }

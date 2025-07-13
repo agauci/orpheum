@@ -25,14 +25,14 @@ public final class AuthRepository {
     private ExecutorService threadPool;
 
     public List<BackstageAuthorisationRequest> getPendingAuthorisations(String siteIdentifier) {
-        final List<BackstageAuthorisationRequest> authenticatedRequests = ongoingAuthorisations.asMap().values().stream()
+        final List<BackstageAuthorisationRequest> authorisedRequests = ongoingAuthorisations.asMap().values().stream()
                 .map(PendingAuthorisationData::pendingRequest)
                 .filter(request -> siteIdentifier.equals(request.siteIdentifier()))
                 .toList();
 
-        log.trace("Resolved the following authenticated requests for gateway authentication. [Requests: {}, Site Identifier: {}]", authenticatedRequests, siteIdentifier);
+        log.trace("Resolved the following authorised requests for gateway authentication. [Requests: {}, Site Identifier: {}]", authorisedRequests, siteIdentifier);
 
-        return authenticatedRequests;
+        return authorisedRequests;
     }
 
     public synchronized CompletableFuture<GatewayAuthorisationOutcome> startAuthorisation(String macAddress, String accessPointMacAddress, String siteIdentifier, String ip, Long timestamp) {

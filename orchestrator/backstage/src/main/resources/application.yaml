@@ -4,15 +4,15 @@ spring:
   datasource:
 #   The Postgres JDBC driver by default attempts to use server-side prepared statements for performance reasons. Supabase employs pgbouncer, which disallows the use of prepared
 #   statements in transaction mode. Therefore, it is crucial to add prepareThreshold=0 to the URL to disable the JDBC driver's default behaviour.
-    url: "jdbc:postgresql://aws-0-eu-central-2.pooler.supabase.com:6543/postgres?user=postgres.zrszmcmpupnkuetzqzgh&password=TG8THF$LXinjFertmRaf&prepareThreshold=0"
-    username: "postgres.zrszmcmpupnkuetzqzgh"
-    password: "TG8THF$LXinjFertmRaf"
+    url: "jdbc:postgresql://ep-lucky-sun-a2gtieye-pooler.eu-central-1.aws.neon.tech/orpheum?user=neondb_owner&password=npg_I0PdsLFtUf2M&sslmode=require&channelBinding=require"
+    username: "neondb_owner"
+    password: "npg_I0PdsLFtUf2M"
     hikari:
-      maximum-pool-size: 3
-      minimum-idle: 1
-      idle-timeout: 30000
-      connection-timeout: 120000
-      max-lifetime: 60000
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 300000         # 5 min
+      connection-timeout: 30000    # 30s
+      max-lifetime: 1800000        # 30 min
   flyway:
     enabled: true
 

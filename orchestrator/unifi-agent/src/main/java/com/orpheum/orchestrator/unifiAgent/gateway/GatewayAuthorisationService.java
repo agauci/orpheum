@@ -16,11 +16,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * The "main" service which (i) continuously polls the backstage server, (ii) identifies which pending backstage
  * authorisation requests have not been seen yet by the agent, and (iii) asynchronously triggers a fresh
- * {@link GatewayAuthenticationRunnable} to perform the UniFi gateway authorisation accordingly.
+ * {@link GatewayAuthorisationRunnable} to perform the UniFi gateway authorisation accordingly.
  */
-public class GatewayAuthenticationService {
+public class GatewayAuthorisationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GatewayAuthenticationService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GatewayAuthorisationService.class);
 
     private static final AtomicBoolean IS_RUNNING = new AtomicBoolean(true);
 
@@ -34,12 +34,12 @@ public class GatewayAuthenticationService {
                 TimeUnit.MILLISECONDS
         );
 
-        LOGGER.info("Started polling of backstage authenticated requests.");
+        LOGGER.info("Started polling of backstage pending authorisation requests.");
         while (IS_RUNNING.get()) {
             try {
                 Thread.sleep(ApplicationProperties.getLong("backstage_server_poll_delay_ms"));
 
-                List<BackstageAuthorisationRequest> retrievedPendingAuths = BackstageClient.getPendingAuthenticatedRequests();
+                List<BackstageAuthorisationRequest> retrievedPendingAuths = BackstageClient.getPendingAuthorisationRequests();
 
                 if (retrievedPendingAuths.size() != 0) {
                     // Check if any of the retrieved pending authorisation requests have already been actioned on. Those which
@@ -47,7 +47,7 @@ public class GatewayAuthenticationService {
                     final List<BackstageAuthorisationRequest> newPendingAuths = BackstageAuthRepository.merge(retrievedPendingAuths);
 
                     if (newPendingAuths.size() != 0) {
-                        newPendingAuths.forEach(pendingAuth -> service.execute(new GatewayAuthenticationRunnable(pendingAuth)));
+                        newPendingAuths.forEach(pendingAuth -> service.execute(new GatewayAuthorisationRunnable(pendingAuth)));
                     }
                 }
             } catch (Exception e) {
@@ -77,8 +77,8 @@ public class GatewayAuthenticationService {
         return CACHE_MANAGER.resolveDeviceByMacs(mac, ap_mac);
     }
 
-    public static void addAuthorisedCachedDevice(UnifiGatewayActiveDevice device) {
-        CACHE_MANAGER.addAuthorisedCachedDevice(device);
+    public static void addAuthorisedDeviceToCache(UnifiGatewayActiveDevice device) {
+        CACHE_MANAGER.addAuthorisedDeviceToCache(device);
     }
 
     public static List<UnifiGatewayActiveDevice> getAuthorisedDevicesView() {

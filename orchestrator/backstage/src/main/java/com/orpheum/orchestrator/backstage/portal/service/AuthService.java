@@ -9,7 +9,6 @@ import com.orpheum.orchestrator.backstage.portal.repository.UserDataRepository;
 import com.orpheum.orchestrator.backstage.portal.support.PortalConfig;
 import com.orpheum.orchestrator.backstage.portal.support.PortalConfig.SiteConfigDetails;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,10 +35,10 @@ public class AuthService {
     public List<BackstageAuthorisationRequest> getPendingAuthorisations(String siteIdentifier, String authToken) {
         validateAuthToken(authToken);
 
-        final List<BackstageAuthorisationRequest> resolvedAuthentications = authRepository.getPendingAuthorisations(siteIdentifier);
-        log.trace("Resolved {} pending authentication requests. [Requests: {}]", resolvedAuthentications.size(), resolvedAuthentications);
+        final List<BackstageAuthorisationRequest> resolvedPendingAuthorisations = authRepository.getPendingAuthorisations(siteIdentifier);
+        log.trace("Resolved {} pending authorisation requests. [Requests: {}]", resolvedPendingAuthorisations.size(), resolvedPendingAuthorisations);
 
-        return resolvedAuthentications;
+        return resolvedPendingAuthorisations;
     }
 
     public void onAuthorizationOutcome(GatewayAuthorisationOutcome outcome, String authToken) {

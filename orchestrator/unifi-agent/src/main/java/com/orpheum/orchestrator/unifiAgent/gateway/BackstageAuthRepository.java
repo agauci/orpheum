@@ -17,13 +17,13 @@ public final class BackstageAuthRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BackstageAuthRepository.class);
 
-    private static final Set<BackstageAuthorisationRequest> ongoingAuthentications = Collections.synchronizedSet(new HashSet<>());
+    private static final Set<BackstageAuthorisationRequest> ONGOING_AUTHORISATIONS = Collections.synchronizedSet(new HashSet<>());
 
     public static List<BackstageAuthorisationRequest> merge(List<BackstageAuthorisationRequest> backstageAuthorisationRequests) {
-        LOGGER.trace("Received pending gateway authenticated requests {}. Current set: {}", backstageAuthorisationRequests, ongoingAuthentications);
+        LOGGER.trace("Received pending gateway authorisation requests {}. Current set: {}", backstageAuthorisationRequests, ONGOING_AUTHORISATIONS);
 
         Map<Boolean, List<BackstageAuthorisationRequest>> duplicateEntriesPartition = backstageAuthorisationRequests.stream()
-                .collect(Collectors.partitioningBy(ongoingAuthentications::contains));
+                .collect(Collectors.partitioningBy(ONGOING_AUTHORISATIONS::contains));
         final List<BackstageAuthorisationRequest> duplicateEntries = duplicateEntriesPartition.get(true);
         if (!duplicateEntries.isEmpty()) {
             LOGGER.trace("Resolved duplicate entries {}", duplicateEntries);
@@ -32,16 +32,16 @@ public final class BackstageAuthRepository {
         List<BackstageAuthorisationRequest> newEntries = duplicateEntriesPartition.get(false);
         if (newEntries.size() != 0) {
             LOGGER.debug("Adding new entries {}", newEntries);
-            ongoingAuthentications.addAll(newEntries);
+            ONGOING_AUTHORISATIONS.addAll(newEntries);
         }
 
         return newEntries;
     }
 
-    public static void onGatewayAuthenticationCompleted(BackstageAuthorisationRequest backstageAuthorisationRequest) {
-        LOGGER.debug("Backstage authentication request {} completed and removed from repository.", backstageAuthorisationRequest);
+    public static void onGatewayAuthorisationCompleted(BackstageAuthorisationRequest backstageAuthorisationRequest) {
+        LOGGER.debug("Backstage authorisation request {} completed and removed from repository.", backstageAuthorisationRequest);
 
-        ongoingAuthentications.remove(backstageAuthorisationRequest);
+        ONGOING_AUTHORISATIONS.remove(backstageAuthorisationRequest);
     }
 
 }

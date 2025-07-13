@@ -13,7 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Unifi Agent</name>
 	<packaging>jar</packaging>
-	<description>A Unifi gateway agent which seeks and executes authenticated secure portal server requests.</description>
+	<description>A Unifi gateway agent which seeks and executes authorised secure portal server requests.</description>
 
 	<dependencies>
 		<dependency>

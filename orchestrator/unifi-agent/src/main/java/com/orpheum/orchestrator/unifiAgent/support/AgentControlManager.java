@@ -2,7 +2,7 @@ package com.orpheum.orchestrator.unifiAgent.support;
 
 import com.orpheum.orchestrator.unifiAgent.auth.GatewayAuthConnectionManager;
 import com.orpheum.orchestrator.unifiAgent.capport.CaptivePortalDeviceStateServer;
-import com.orpheum.orchestrator.unifiAgent.gateway.GatewayAuthenticationService;
+import com.orpheum.orchestrator.unifiAgent.gateway.GatewayAuthorisationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,14 +83,14 @@ public class AgentControlManager {
 
     private static void processClearAuthorisedDevicesCache(Properties controlProperties) {
         if (Boolean.parseBoolean(controlProperties.getProperty("clearAuthorisedDevicesCache"))) {
-            GatewayAuthenticationService.clearCache();
+            GatewayAuthorisationService.clearCache();
         }
     }
 
     private static void processPrintAuthorisedDevicesCache(Properties controlProperties) {
         if (Boolean.parseBoolean(controlProperties.getProperty("printAuthorisedDevicesCache"))) {
             if ((System.currentTimeMillis() - LAST_AUTHORISED_DEVICES_CACHE_VIEW.get()) > 60000L) {
-                LOGGER.info("Current devices in cache: {}", GatewayAuthenticationService.getAuthorisedDevicesView());
+                LOGGER.info("Current devices in cache: {}", GatewayAuthorisationService.getAuthorisedDevicesView());
 
                 LAST_AUTHORISED_DEVICES_CACHE_VIEW.set(System.currentTimeMillis());
             }
@@ -102,7 +102,7 @@ public class AgentControlManager {
             IS_SHUTDOWN_TRIGGERED.set(true);
 
             GatewayAuthConnectionManager.shutdown();
-            GatewayAuthenticationService.shutdown();
+            GatewayAuthorisationService.shutdown();
             CaptivePortalDeviceStateServer.shutdown();
         } catch (Exception e) {
             LOGGER.error("Encountered unexpected exception during shutdown process.", e);

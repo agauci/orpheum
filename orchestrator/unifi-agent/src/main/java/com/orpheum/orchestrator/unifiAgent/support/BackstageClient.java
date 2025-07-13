@@ -39,8 +39,8 @@ public class BackstageClient {
         }
     }
 
-    public static List<BackstageAuthorisationRequest> getPendingAuthenticatedRequests() throws IOException, InterruptedException {
-        LOGGER.trace("Attempting request to retrieve pending authentication requests from backstage.");
+    public static List<BackstageAuthorisationRequest> getPendingAuthorisationRequests() throws IOException, InterruptedException {
+        LOGGER.trace("Attempting request to retrieve pending authorisation requests from backstage.");
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(GET_URL))
@@ -55,15 +55,15 @@ public class BackstageClient {
             throw new IllegalStateException(String.format("Backstage GET request failed! Status code: %s, Headers: %s, Body: %s", response.statusCode(), response.headers(), response.body()));
         }
 
-        final List<BackstageAuthorisationRequest> retrievedRequests = MAPPER.readValue(response.body(), new TypeReference<List<BackstageAuthorisationRequest>>() {});
+        final List<BackstageAuthorisationRequest> retrievedRequests = MAPPER.readValue(response.body(), new TypeReference<>() {});
 
         LOGGER.trace("Successfully completed GET backstage request. [Retrieved requests = {}]", retrievedRequests);
 
         return retrievedRequests;
     }
 
-    public static void notifyAuthenticationOutcome(final GatewayAuthorisationOutcome outcome) throws IOException, InterruptedException {
-        LOGGER.debug("Attempting request to notify authentication outcome. [Outcome={}]", outcome);
+    public static void notifyAuthorisationOutcome(final GatewayAuthorisationOutcome outcome) throws IOException, InterruptedException {
+        LOGGER.debug("Attempting request to notify authorisation outcome. [Outcome={}]", outcome);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(CONFIRM_URL))

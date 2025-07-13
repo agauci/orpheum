@@ -31,44 +31,43 @@ import static com.orpheum.orchestrator.unifiAgent.model.GatewayAuthenticationOut
  *     notification in order to hydrate the cache with the device's full details.</li>
  * </ul>
  */
-public class GatewayAuthenticationRunnable implements Runnable {
+public class GatewayAuthorisationRunnable implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GatewayAuthenticationRunnable.class);
-    private final BackstageAuthorisationRequest authenticatedRequest;
+    private static final Logger LOGGER = LoggerFactory.getLogger(GatewayAuthorisationRunnable.class);
+    private final BackstageAuthorisationRequest pendingAuthorisationRequest;
 
-    public GatewayAuthenticationRunnable(final BackstageAuthorisationRequest authenticatedRequest) {
-        this.authenticatedRequest = authenticatedRequest;
+    public GatewayAuthorisationRunnable(final BackstageAuthorisationRequest authorisationRequest) {
+        this.pendingAuthorisationRequest = authorisationRequest;
     }
 
     @Override
     public void run() {
         GatewayAuthConnection gatewayAuthConnection = null;
         try {
-            LOGGER.debug("Starting gateway device authorization process. [Request:{}]", authenticatedRequest);
+            LOGGER.debug("Starting gateway device authorization process. [Request:{}]", pendingAuthorisationRequest);
 
             gatewayAuthConnection = GatewayAuthConnectionManager.borrowConnection();
 
-            String macAddress = authenticatedRequest.macAddress();
-            String apMacAddress = authenticatedRequest.accessPointMacAddress();
+            String macAddress = pendingAuthorisationRequest.macAddress();
+            String apMacAddress = pendingAuthorisationRequest.accessPointMacAddress();
             Optional<UnifiGatewayActiveDevice> unifiGatewayActiveDevice = Optional.empty();
             if (isEmptyOrNull(macAddress) || isEmptyOrNull(apMacAddress)) {
-                LOGGER.debug("Missing MAC address or access point MAC address. Attempting to resolve device by ip. [Request:{}]", authenticatedRequest);
+                LOGGER.debug("Missing MAC address or access point MAC address. Attempting to resolve device by ip. [Request:{}]", pendingAuthorisationRequest);
 
-                if (isEmptyOrNull(authenticatedRequest.ip())) {
-                    BackstageClient.notifyAuthenticationOutcome(new GatewayAuthorisationOutcome(authenticatedRequest, FAILED, "Missing IP in authorization request"));
+                if (isEmptyOrNull(pendingAuthorisationRequest.ip())) {
+                    BackstageClient.notifyAuthorisationOutcome(new GatewayAuthorisationOutcome(pendingAuthorisationRequest, FAILED, "Missing IP in authorization request"));
                     return;
                 }
 
-                unifiGatewayActiveDevice = GatewayAuthenticationService.resolveDeviceByIp(authenticatedRequest.ip());
+                unifiGatewayActiveDevice = GatewayAuthorisationService.resolveDeviceByIp(pendingAuthorisationRequest.ip());
 
                 if (unifiGatewayActiveDevice.isEmpty()) {
-                    BackstageClient.notifyAuthenticationOutcome(new GatewayAuthorisationOutcome(authenticatedRequest, FAILED, "Unable to resolve device by IP"));
+                    BackstageClient.notifyAuthorisationOutcome(new GatewayAuthorisationOutcome(pendingAuthorisationRequest, FAILED, "Unable to resolve device by IP"));
                     return;
                 }
 
                 macAddress = unifiGatewayActiveDevice.get().id();
                 apMacAddress = unifiGatewayActiveDevice.get().ap_mac();
-
             }
 
             UnifiGatewayClient.authorizeDevice(
@@ -77,39 +76,39 @@ public class GatewayAuthenticationRunnable implements Runnable {
                     apMacAddress
             );
 
-            BackstageClient.notifyAuthenticationOutcome(new GatewayAuthorisationOutcome(authenticatedRequest, SUCCESS));
+            BackstageClient.notifyAuthorisationOutcome(new GatewayAuthorisationOutcome(pendingAuthorisationRequest, SUCCESS));
 
             updateCache(unifiGatewayActiveDevice);
 
-            LOGGER.debug("Gateway authentication complete. [Request:{}]", authenticatedRequest);
+            LOGGER.debug("Gateway authentication complete. [Request:{}]", pendingAuthorisationRequest);
         } catch (Exception e) {
-            LOGGER.error("Failed to authenticate request on the UniFi Gateway. Notifying backstage of outcome. [Request:{}]", authenticatedRequest, e);
+            LOGGER.error("Failed to authenticate request on the UniFi Gateway. Notifying backstage of outcome. [Request:{}]", pendingAuthorisationRequest, e);
             try {
-                BackstageClient.notifyAuthenticationOutcome(new GatewayAuthorisationOutcome(authenticatedRequest, FAILED, "Http request failure"));
-                LOGGER.error("Notified backstage of failed outcome. [Request:{}]", authenticatedRequest);
+                BackstageClient.notifyAuthorisationOutcome(new GatewayAuthorisationOutcome(pendingAuthorisationRequest, FAILED, "Http request failure"));
+                LOGGER.error("Notified backstage of failed outcome. [Request:{}]", pendingAuthorisationRequest);
             } catch (IOException | InterruptedException ex) {
-                LOGGER.error("Failed to notify backstage of outcome. [Request:{}]", authenticatedRequest, ex);
+                LOGGER.error("Failed to notify backstage of outcome. [Request:{}]", pendingAuthorisationRequest, ex);
             }
         } finally {
             if (gatewayAuthConnection != null) {
                 GatewayAuthConnectionManager.returnConnection(gatewayAuthConnection);
             }
-            BackstageAuthRepository.onGatewayAuthenticationCompleted(authenticatedRequest);
+            BackstageAuthRepository.onGatewayAuthorisationCompleted(pendingAuthorisationRequest);
         }
     }
 
     private void updateCache(Optional<UnifiGatewayActiveDevice> resolvedDevice) {
-        UnifiGatewayActiveDevice device = null;
+        UnifiGatewayActiveDevice device;
         if (resolvedDevice.isPresent()) {
             device = resolvedDevice.get();
             LOGGER.debug("Device already resolved by IP from gateway. [Device:{}]", device);
         } else {
-            LOGGER.debug("Unable to readily cache device since IP is not known from request. Attempting to resolve via manager. [Request:{}]", authenticatedRequest);
-            device = GatewayAuthenticationService.resolveDeviceByMacs(authenticatedRequest.macAddress(), authenticatedRequest.accessPointMacAddress()).get();
-            LOGGER.debug("Resolved device from gateway by MAC & AP mac. [Device:{}, Request:{}]", device, authenticatedRequest);
+            LOGGER.debug("Unable to readily cache device since IP is not known from request. Attempting to resolve via manager. [Request:{}]", pendingAuthorisationRequest);
+            device = GatewayAuthorisationService.resolveDeviceByMacs(pendingAuthorisationRequest.macAddress(), pendingAuthorisationRequest.accessPointMacAddress()).get();
+            LOGGER.debug("Resolved device from gateway by MAC & AP mac. [Device:{}, Request:{}]", device, pendingAuthorisationRequest);
         }
 
-        GatewayAuthenticationService.addAuthorisedCachedDevice(device);
+        GatewayAuthorisationService.addAuthorisedDeviceToCache(device);
     }
 
     private boolean isEmptyOrNull(final String str) {

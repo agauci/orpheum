@@ -1,7 +1,7 @@
 package com.orpheum.orchestrator.unifiAgent.capport;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.orpheum.orchestrator.unifiAgent.gateway.GatewayAuthenticationService;
+import com.orpheum.orchestrator.unifiAgent.gateway.GatewayAuthorisationService;
 import com.orpheum.orchestrator.unifiAgent.model.UnifiGatewayActiveDevice;
 import com.orpheum.orchestrator.unifiAgent.support.ApplicationProperties;
 import io.undertow.Undertow;
@@ -69,7 +69,7 @@ public class CaptivePortalDeviceStateServer {
             final String deviceIp = resolveIp(exchange);
             LOGGER.debug("Received Capport GET request for device with IP {}", deviceIp);
 
-            Optional<UnifiGatewayActiveDevice> resolvedDevice = GatewayAuthenticationService.resolveAuthorisedCachedDevice(deviceIp);
+            Optional<UnifiGatewayActiveDevice> resolvedDevice = GatewayAuthorisationService.resolveAuthorisedCachedDevice(deviceIp);
 
             CaptivePortalResponse response;
             if (resolvedDevice.isPresent()) {
