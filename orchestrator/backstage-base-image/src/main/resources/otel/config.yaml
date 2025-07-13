@@ -1,0 +1,26 @@
+processors: 
+  batch: 
+    send_batch_size: 5000 
+    timeout: 10s 
+  
+receivers: 
+  otlp: 
+    protocols: 
+      grpc: 
+      http: 
+  
+exporters: 
+  otlphttp: 
+    endpoint: 'https://otel.kloudmate.com:4318' 
+    headers: 
+      Authorization: 'sk_9DfnrMIdYuDaBSMuaQfyGFAO' 
+  
+service: 
+  pipelines: 
+    logs: 
+      receivers: [otlp] 
+      processors: [batch] 
+      exporters: [otlphttp] 
+  telemetry: 
+    logs: 
+      level: "debug"

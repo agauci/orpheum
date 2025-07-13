@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.orpheum</groupId>
+		<artifactId>orchestrator</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<groupId>com.orpheum.orchestrator</groupId>
+	<artifactId>backstage-base-image</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Backstage Base Image</name>
+	<packaging>jar</packaging>
+	<description>The backstage base image</description>
+
+	<profiles>
+		<profile>
+			<id>docker</id>
+			<build>
+				<resources>
+					<!-- Any resources excluded here will not be packaged in the final artifact -->
+					<resource>
+						<directory>src/main/resources</directory>
+						<excludes>
+							<exclude>application.yaml</exclude>
+							<exclude>logback.xml</exclude>
+							<exclude>logback-prod.xml</exclude>
+						</excludes>
+						<filtering>false</filtering>
+					</resource>
+				</resources>
+				<plugins>
+					<!-- maven-resources-plugin handles moving all docker resources to the target deploy folder -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-resources</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>./target</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/main/resources</directory>
+											<excludes>
+												<exclude>/static</exclude>
+												<exclude>/templates</exclude>
+											</excludes>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!-- Build Docker Image -->
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<version>0.46.0</version>
+						<executions>
+							<execution>
+								<id>build-image</id>
+								<phase>package</phase> <!-- Bind to package phase -->
+								<goals>
+									<goal>build</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<verbose>true</verbose>
+							<images>
+								<image>
+									<name>orpheum/base-image:latest</name>
+									<build>
+										<dockerFile>${project.basedir}/src/main/resources/Dockerfile</dockerFile>
+										<contextDir>${project.basedir}</contextDir>
+									</build>
+								</image>
+							</images>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
