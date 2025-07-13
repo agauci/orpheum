@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="OTLP" class="io.opentelemetry.instrumentation.logback.appender.OpenTelemetryAppender">
+        <!-- Change endpoint to your OTLP receiver (default gRPC port 4317 or HTTP port 4318) -->
+        <endpoint>http://localhost:4317</endpoint>
+        <resourceAttributes>service.name=backstage</resourceAttributes>
+        <minimumLogLevel>DEBUG</minimumLogLevel>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="OTLP"/>
+    </root>
+
+    <logger name="com.orpheum" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="OTLP"/>
+    </logger>
+
+</configuration>
