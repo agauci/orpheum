@@ -1,7 +1,7 @@
 services:
   backstage-server:
     container_name: backstage-server
-    image: orpheum-backstage-server
+    image: orpheum/backstage-server
     environment:
       - TZ=Europe/Rome
     ports:
