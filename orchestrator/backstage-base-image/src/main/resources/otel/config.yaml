@@ -22,5 +22,6 @@ service:
       processors: [batch] 
       exporters: [otlphttp] 
   telemetry: 
-    logs: 
-      level: "debug"
+    logs:
+      # Represents the Open Telemetry Collector's internal log level
+      level: "warn"

@@ -27,7 +27,7 @@
 			<dependency>
 				<groupId>io.opentelemetry.instrumentation</groupId>
 				<artifactId>opentelemetry-instrumentation-bom</artifactId>
-				<version>2.17.0</version>
+				<version>2.16.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -69,6 +69,15 @@
 		<dependency>
 			<groupId>io.opentelemetry.instrumentation</groupId>
 			<artifactId>opentelemetry-spring-boot-starter</artifactId>
+		</dependency>
+		<!-- The opentelemetry BOM is pulling a more modern version of the below dependency, causing a runtime
+		     exception. This dependency is added to force the correct version compatible with the rest of the
+		     dependencies. -->
+		<dependency>
+			<groupId>io.opentelemetry</groupId>
+			<artifactId>opentelemetry-sdk-extension-incubator</artifactId>
+			<version>1.49.0-alpha</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>

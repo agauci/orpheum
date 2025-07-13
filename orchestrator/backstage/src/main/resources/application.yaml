@@ -4,7 +4,7 @@ spring:
   datasource:
 #   The Postgres JDBC driver by default attempts to use server-side prepared statements for performance reasons. Supabase employs pgbouncer, which disallows the use of prepared
 #   statements in transaction mode. Therefore, it is crucial to add prepareThreshold=0 to the URL to disable the JDBC driver's default behaviour.
-    url: "jdbc:postgresql://ep-lucky-sun-a2gtieye-pooler.eu-central-1.aws.neon.tech/orpheum?user=neondb_owner&password=npg_I0PdsLFtUf2M&sslmode=require&channelBinding=require"
+    url: "jdbc:postgresql://ep-lucky-sun-a2gtieye-pooler.eu-central-1.aws.neon.tech/orpheum?user=neondb_owner&password=npg_I0PdsLFtUf2M&sslmode=require&channelBinding=require&prepareThreshold=0"
     username: "neondb_owner"
     password: "npg_I0PdsLFtUf2M"
     hikari:
@@ -29,14 +29,12 @@ otel:
         protocol: grpc
   propagators:
     - tracecontext
-    - b3
   resource:
     attributes:
       deployment.environment: prod
       service:
         name: backstage-server
         namespace: orpheum
-
 
 # SSL is handled via nginx
 #server:
