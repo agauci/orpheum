@@ -23,9 +23,20 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir -p /var/www/certbot && \
     mkdir -p /orpheum-backstage
 
-# Install open telemetry collector
-RUN wget https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.128.0/otelcol_0.128.0_linux_amd64.deb
-RUN dpkg -i otelcol_0.128.0_linux_amd64.deb
+# Install OpenTelemetry Collector
+RUN ARCH=$(dpkg --print-architecture) && \
+    echo "Detected architecture: $ARCH" && \
+    if [ "$ARCH" = "amd64" ]; then \
+        FILE=otelcol_0.128.0_linux_amd64.deb; \
+    elif [ "$ARCH" = "arm64" ]; then \
+        FILE=otelcol_0.128.0_linux_arm64.deb; \
+    else \
+        echo "Unsupported architecture: $ARCH" && exit 1; \
+    fi && \
+    echo "Downloading $FILE..." && \
+    wget https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.128.0/$FILE && \
+    echo "Installing $FILE with dpkg..." && \
+    dpkg -i $FILE
 
 # Copy files
 COPY /src/main/resources/nginx/default.conf /etc/nginx/sites-available/default

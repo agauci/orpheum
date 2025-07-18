@@ -37,27 +37,34 @@ public class BackstageGatewayLogAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent eventObject) {
-        // Extract stacktrace if throwable is present
-        String stacktrace = null;
-        IThrowableProxy throwableProxy = eventObject.getThrowableProxy();
-        if (throwableProxy != null) {
-            stacktrace = ThrowableProxyUtil.asString(throwableProxy);
-        }
-
         BackstageLogEntry logEvent = new BackstageLogEntry(
                 eventObject.getFormattedMessage(),
                 eventObject.getTimeStamp(),
                 eventObject.getLevel().toString(),
                 eventObject.getLoggerName(),
                 SITE_FRIENDLY_NAME,
-                stacktrace
+                extractStacktrace(eventObject)
         );
 
         eventBuffer.add(logEvent);
 
+        if (eventBuffer.size() > (batchSize * 2)) {
+            // Avoid unbounded buffer growth by removing the oldest log if batch size is exceeded by more than double
+            eventBuffer.remove(0);
+        }
         if (eventBuffer.size() >= batchSize) {
             triggerSend();
         }
+    }
+
+    private static String extractStacktrace(ILoggingEvent eventObject) {
+        // Extract stacktrace if throwable is present
+        String stacktrace = null;
+        IThrowableProxy throwableProxy = eventObject.getThrowableProxy();
+        if (throwableProxy != null) {
+            stacktrace = ThrowableProxyUtil.asString(throwableProxy);
+        }
+        return stacktrace;
     }
 
     private void checkTimeoutAndSend() {
