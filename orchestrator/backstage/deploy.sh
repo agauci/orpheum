@@ -2,6 +2,9 @@
 
 set -e  # Exit on any command failure
 
+# Step 0: Change directory
+cd orpheum || { echo "Failed to change directory to orpheum folder"; exit 1; }
+
 # Step 1: Pull from git
 echo "Pulling latest changes from git..."
 git pull || { echo "Git pull failed. Exiting."; exit 1; }
@@ -14,7 +17,7 @@ if [[ "$confirm" != "y" ]]; then
 fi
 
 # Step 3: Change directory
-cd orpheum/orchestrator/backstage { echo "Failed to change directory to backstage folder"; exit 1; }
+cd orchestrator/backstage || { echo "Failed to change directory to backstage folder"; exit 1; }
 
 # Step 4: Run Maven build
 echo "Building project with Maven..."
