@@ -6,31 +6,20 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Component
-@ConfigurationProperties(prefix = "orpheum")
+@ConfigurationProperties(prefix = "backstage.heartbeat")
 @NoArgsConstructor
 @Data
-public class HeartbeatConfig {
+public class HeartbeatVerifierConfig {
 
-    private Map<String, SiteConfigDetails> siteConfig;
-    private String backupWifiSsid;
-    private String backupWifiPassword;
-    private String consentText;
-
-    public Optional<SiteConfigDetails> getSiteConfigBySiteIdentifier(final String siteIdentifier) {
-        return siteConfig.entrySet().stream()
-                .filter(entry -> entry.getValue().getSiteIdentifier().equals(siteIdentifier))
-                .map(Map.Entry::getValue)
-                .findFirst();
-    }
+    private Long periodMs;
+    private Long warningIntervalMs;
+    private Map<HeartbeatType, HeartbeatTypeConfigDetails> verifier;
 
     @NoArgsConstructor
     @Data
-    public static class SiteConfigDetails {
-        private String siteIdentifier;
-        private String redirectUrl;
-        private String friendlyName;
+    public static class HeartbeatTypeConfigDetails {
+        private Long toleranceMs;
     }
 }

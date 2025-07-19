@@ -46,8 +46,20 @@ otel:
 
 backstage:
   heartbeat:
-    # Write a heartbeat entry every 6 hours
-    period-ms: 21600000
+    # Run verification every minute
+    period-ms: 60000
+    # Warnings will be triggered every 10 minutes
+    warning-interval-ms: 60000
+    verifier:
+      DATABASE:
+          # 90 minute tolerance
+          tolerance-ms: 5400000
+      GATEWAY:
+          # 15 minute tolerance. Gateway configured to triggering heartbeat every 5 minutes
+          tolerance-ms: 900000
+    database:
+      # Write a db heartbeat entry every hour
+      period-ms: 3600000
   portal:
     auth-timeout-ms: 30000
     auth-thread-pool: 3

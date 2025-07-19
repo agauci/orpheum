@@ -1,4 +1,4 @@
-package com.orpheum.orchestrator.backstage.gateway.model;
+package com.orpheum.orchestrator.backstage.logging.model;
 
 import lombok.Data;
 

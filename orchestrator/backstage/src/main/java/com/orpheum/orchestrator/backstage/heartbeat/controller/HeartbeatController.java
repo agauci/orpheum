@@ -31,10 +31,8 @@ public class HeartbeatController {
     public ResponseEntity<String> refreshHeartbeat(
             @RequestParam("type") HeartbeatType heartbeatType,
             @RequestParam("identifier") String identifier) {
-        
-        log.debug("Refreshing heartbeat. [Type: {}, Identifier: {}]", heartbeatType, identifier);
         heartbeatService.refresh(heartbeatType, identifier);
         
-        return ResponseEntity.ok("Heartbeat refreshed successfully");
+        return ResponseEntity.ok("");
     }
 }

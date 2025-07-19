@@ -77,10 +77,13 @@ Installation:
 - Turn off auto updates for both the UI and network. Allowing auto updates will result in a format of the device, losing any custom installed software (Java) and nginx configuration.
 
 To check if service is set up correctly:
-- Run systemctl list-units --type=service and check if service is there
+- systemctl list-units --type=service and check if service is there
+
+To check when the next restart timer will run:
+- systemctl list-timers --all | grep orpheum-unifi-agent
 
 To view logs from set up service:
-- Run journalctl -u orpheum-unifi-agent.service -f
+- journalctl -u orpheum-unifi-agent.service -f
 
 ## Adding A New Location
 - Add the {{local_agent_url}} to the let's encrypt command (see backstage/src/main/resources/Dockerfile)

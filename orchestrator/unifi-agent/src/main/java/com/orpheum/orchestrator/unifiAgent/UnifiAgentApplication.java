@@ -3,6 +3,7 @@ package com.orpheum.orchestrator.unifiAgent;
 
 import com.orpheum.orchestrator.unifiAgent.auth.GatewayAuthConnectionManager;
 import com.orpheum.orchestrator.unifiAgent.gateway.GatewayAuthorisationService;
+import com.orpheum.orchestrator.unifiAgent.heartbeat.HeartbeatService;
 import com.orpheum.orchestrator.unifiAgent.support.AgentControlManager;
 import com.orpheum.orchestrator.unifiAgent.support.ApplicationProperties;
 import com.orpheum.orchestrator.unifiAgent.capport.CaptivePortalDeviceStateServer;
@@ -35,6 +36,7 @@ public class UnifiAgentApplication {
         AgentControlManager.start(THREAD_POOL);
         // This should always be last since it occupies the main thread
         GatewayAuthorisationService.start(THREAD_POOL);
+        HeartbeatService.start(THREAD_POOL);
     }
 
 }

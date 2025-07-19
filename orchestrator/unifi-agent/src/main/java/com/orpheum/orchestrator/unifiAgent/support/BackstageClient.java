@@ -28,6 +28,7 @@ public class BackstageClient {
     private static final String GET_URL;
     private static final String CONFIRM_URL;
     private static final String LOGS_URL;
+    private static final String HEARTBEAT_URL;
 
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -37,6 +38,7 @@ public class BackstageClient {
             GET_URL = "https://backstage.orpheum.cloud/portal?site_identifier=" + URLEncoder.encode(ApplicationProperties.getString("site_identifier"), "UTF-8");
             CONFIRM_URL = "https://backstage.orpheum.cloud/portal";
             LOGS_URL = "https://backstage.orpheum.cloud/gateway/logs";
+            HEARTBEAT_URL = "https://backstage.orpheum.cloud/heartbeat/refresh";
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -107,6 +109,36 @@ public class BackstageClient {
         if (response.statusCode() != 200) {
             throw new IllegalStateException(String.format("Backstage POST logs request failed! Status code: %s, Headers: %s, Body: %s", response.statusCode(), response.headers(), response.body()));
         }
+    }
+
+    /**
+     * Sends a heartbeat signal to the backstage server.
+     *
+     * @param heartbeatType The type of heartbeat. Valid values are "GATEWAY" or "DATABASE".
+     * @param identifier The identifier for the heartbeat
+     * @throws IOException If an I/O error occurs during the request
+     * @throws InterruptedException If the operation is interrupted
+     * @throws IllegalStateException If the request fails (non-200 status code)
+     */
+    public static void sendHeartbeat(final String heartbeatType, final String identifier) throws IOException, InterruptedException {
+        LOGGER.debug("Sending heartbeat to backstage. [Type={}, Identifier={}]", heartbeatType, identifier);
+
+        String url = HEARTBEAT_URL + "?type=" + URLEncoder.encode(heartbeatType, "UTF-8") + "&identifier=" + URLEncoder.encode(identifier, "UTF-8");
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("X-Auth-Token", ApplicationProperties.getString("backstage_api_auth_token"))
+                .timeout(Duration.ofMillis(ApplicationProperties.getInteger("request_timeout")))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            throw new IllegalStateException(String.format("Backstage POST heartbeat request failed! Status code: %s, Headers: %s, Body: %s", response.statusCode(), response.headers(), response.body()));
+        }
+
+        LOGGER.debug("Successfully sent heartbeat to backstage. [Type={}, Identifier={}]", heartbeatType, identifier);
     }
 
 }

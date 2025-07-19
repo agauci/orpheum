@@ -1,11 +1,8 @@
-package com.orpheum.orchestrator.backstage.gateway.controller;
+package com.orpheum.orchestrator.backstage.logging.controller;
 
-import com.orpheum.orchestrator.backstage.gateway.model.LogEntry;
-import com.orpheum.orchestrator.backstage.gateway.service.GatewayLogService;
+import com.orpheum.orchestrator.backstage.logging.model.LogEntry;
+import com.orpheum.orchestrator.backstage.logging.service.BackstageLoggingService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,15 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * Controller for receiving and processing log entries from gateways.
+ * Controller for receiving and processing log entries from third parties, namely gateways.
  * It receives a list of log entries and triggers logback logs that replicate the received parameters.
  */
 @RestController
 @Slf4j
-public class GatewayLoggerController {
+public class BackstageLoggingController {
 
     @Autowired
-    private GatewayLogService gatewayLogService;
+    private BackstageLoggingService backstageLoggingService;
 
     /**
      * Receives a list of log entries from a gateway and logs them using logback.
@@ -36,7 +33,7 @@ public class GatewayLoggerController {
     public ResponseEntity<String> receiveLogs(@RequestHeader("X-Auth-Token") String authToken,
                                               @RequestBody List<LogEntry> logEntries) {
         for (LogEntry logEntry : logEntries) {
-            gatewayLogService.processLogEntry(authToken, logEntry);
+            backstageLoggingService.processLogEntry(authToken, logEntry);
         }
 
         return ResponseEntity.ok("");

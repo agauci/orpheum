@@ -1,6 +1,6 @@
-package com.orpheum.orchestrator.backstage.gateway.service;
+package com.orpheum.orchestrator.backstage.logging.service;
 
-import com.orpheum.orchestrator.backstage.gateway.model.LogEntry;
+import com.orpheum.orchestrator.backstage.logging.model.LogEntry;
 import com.orpheum.orchestrator.backstage.portal.exception.AuthTokenNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class GatewayLogService {
+public class BackstageLoggingService {
 
     private static final String SITE_FRIENDLY_NAME_MDC_KEY = "siteFriendlyName";
     private static final String UNRECOGNISED_LEVEL_MDC_KEY = "unrecognisedLevel";
