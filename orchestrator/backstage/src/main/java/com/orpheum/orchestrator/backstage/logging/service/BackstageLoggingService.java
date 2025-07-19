@@ -79,7 +79,7 @@ public class BackstageLoggingService {
     }
 
     private String enrichMessage(final String siteFriendlyName, final String message, final String stacktrace) {
-        String enrichedMessage = "[" + siteFriendlyName + "] " + message;
+        String enrichedMessage = message;
 
         if (stacktrace != null && !stacktrace.isEmpty()) {
             enrichedMessage = enrichedMessage + "\n" + stacktrace;

@@ -34,9 +34,10 @@ public class UnifiAgentApplication {
         GatewayAuthConnectionManager.start(THREAD_POOL);
         CaptivePortalDeviceStateServer.start(THREAD_POOL);
         AgentControlManager.start(THREAD_POOL);
+        HeartbeatService.start(THREAD_POOL);
+
         // This should always be last since it occupies the main thread
         GatewayAuthorisationService.start(THREAD_POOL);
-        HeartbeatService.start(THREAD_POOL);
     }
 
 }

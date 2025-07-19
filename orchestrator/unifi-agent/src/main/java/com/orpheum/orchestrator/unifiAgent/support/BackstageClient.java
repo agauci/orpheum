@@ -121,7 +121,7 @@ public class BackstageClient {
      * @throws IllegalStateException If the request fails (non-200 status code)
      */
     public static void sendHeartbeat(final String heartbeatType, final String identifier) throws IOException, InterruptedException {
-        LOGGER.debug("Sending heartbeat to backstage. [Type={}, Identifier={}]", heartbeatType, identifier);
+        LOGGER.trace("Sending heartbeat to backstage. [Type={}, Identifier={}]", heartbeatType, identifier);
 
         String url = HEARTBEAT_URL + "?type=" + URLEncoder.encode(heartbeatType, "UTF-8") + "&identifier=" + URLEncoder.encode(identifier, "UTF-8");
 
@@ -138,7 +138,7 @@ public class BackstageClient {
             throw new IllegalStateException(String.format("Backstage POST heartbeat request failed! Status code: %s, Headers: %s, Body: %s", response.statusCode(), response.headers(), response.body()));
         }
 
-        LOGGER.debug("Successfully sent heartbeat to backstage. [Type={}, Identifier={}]", heartbeatType, identifier);
+        LOGGER.trace("Successfully sent heartbeat to backstage. [Type={}, Identifier={}]", heartbeatType, identifier);
     }
 
 }

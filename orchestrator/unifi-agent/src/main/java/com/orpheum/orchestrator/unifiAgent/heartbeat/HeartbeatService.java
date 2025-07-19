@@ -16,6 +16,7 @@ public class HeartbeatService {
     private static final String SITE_FRIENDLY_NAME = ApplicationProperties.getString("site_friendly_name");
 
     public static void start(final ScheduledExecutorService service) {
+        LOGGER.info("Started heatbeat service.");
         service.scheduleAtFixedRate(
                 () -> {
                     try {
