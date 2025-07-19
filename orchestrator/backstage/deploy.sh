@@ -24,8 +24,8 @@ if [[ "$confirm" != "y" ]]; then
     exit 0
 fi
 
-# Step 5: Change directory to /deploy
-cd /deploy || { echo "Failed to change directory to /deploy"; exit 1; }
+# Step 5: Change directory to deploy
+cd deploy || { echo "Failed to change directory to /deploy"; exit 1; }
 
 # Step 6: Run Docker Compose
 echo "Starting Docker Compose..."
