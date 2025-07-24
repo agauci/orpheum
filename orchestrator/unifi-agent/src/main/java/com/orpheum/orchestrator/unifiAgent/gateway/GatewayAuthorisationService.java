@@ -51,14 +51,14 @@ public class GatewayAuthorisationService {
                     }
                 }
             } catch (Exception e) {
-                LOGGER.error("Gateway authentication service encountered exception. Skipping run.", e);
+                LOGGER.error("Gateway authorisation service encountered exception. Skipping run.", e);
             }
         }
     }
 
     public static void shutdown() {
         IS_RUNNING.set(false);
-        LOGGER.debug("Stopped GatewayAuthenticationService");
+        LOGGER.debug("Stopped GatewayAuthorisationService");
     }
 
     public static void clearCache() {
