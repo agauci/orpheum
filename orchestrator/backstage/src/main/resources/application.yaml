@@ -4,8 +4,9 @@ spring:
   datasource:
 #   The Postgres JDBC driver by default attempts to use server-side prepared statements for performance reasons. Supabase employs pgbouncer, which disallows the use of prepared
 #   statements in transaction mode. Therefore, it is crucial to add prepareThreshold=0 to the URL to disable the JDBC driver's default behaviour.
-#    url: "jdbc:postgresql://ep-lucky-sun-a2gtieye-pooler.eu-central-1.aws.neon.tech/orpheum?user=neondb_owner&password=npg_I0PdsLFtUf2M&sslmode=require&channelBinding=require&prepareThreshold=0"
-    url: "jdbc:postgresql://ep-aged-base-a2c480dv-pooler.eu-central-1.aws.neon.tech/orpheum?user=neondb_owner&password=npg_aG2UVZPSTj9m&sslmode=require&channelBinding=require&prepareThreshold=0"
+    url: "jdbc:postgresql://ep-lucky-sun-a2gtieye-pooler.eu-central-1.aws.neon.tech/orpheum?user=neondb_owner&password=npg_I0PdsLFtUf2M&sslmode=require&channelBinding=require&prepareThreshold=0"
+#    STAGING
+#    url: "jdbc:postgresql://ep-aged-base-a2c480dv-pooler.eu-central-1.aws.neon.tech/orpheum?user=neondb_owner&password=npg_aG2UVZPSTj9m&sslmode=require&channelBinding=require&prepareThreshold=0"
     username: "neondb_owner"
     password: "npg_I0PdsLFtUf2M"
     hikari:
@@ -72,7 +73,7 @@ orpheum:
   siteConfig:
     teatru_guest:
       siteIdentifier: "Teatru Guest"
-      redirectUrl: "https://orpheum.com.mt"
+      redirectUrl: "https://orpheum.com.mt/guidebook-teatru-home/"
       friendlyName: "Teatru"
   backupWifiSsid: "Orpheum Backup"
   backupWifiPassword: "MerhbaFlOrfeju!"
