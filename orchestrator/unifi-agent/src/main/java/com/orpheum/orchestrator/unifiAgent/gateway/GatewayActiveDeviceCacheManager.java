@@ -43,6 +43,7 @@ public class GatewayActiveDeviceCacheManager implements Runnable {
 
     private static final Integer AUTHORIZED_DEVICE_CACHE_EXPIRY_MS = ApplicationProperties.getInteger("authorized_device_cache_expiry_ms");
     private static final Long DEVICE_RESOLUTION_TIMEOUT_MS = ApplicationProperties.getLong("authorized_device_resolution_timeout_ms");
+    private static final Long DEVICE_RESOLUTION_DELAY_MS = ApplicationProperties.getLong("authorized_device_resolution_delay_ms");
 
     private final Cache<String, UnifiGatewayActiveDevice> authorisedDeviceCacheByIp = Caffeine.newBuilder()
             .expireAfterWrite(AUTHORIZED_DEVICE_CACHE_EXPIRY_MS, TimeUnit.MILLISECONDS)
@@ -178,6 +179,8 @@ public class GatewayActiveDeviceCacheManager implements Runnable {
                 if (unifiGatewayActiveDevice.isPresent()) {
                     return unifiGatewayActiveDevice;
                 }
+
+                Thread.sleep(DEVICE_RESOLUTION_DELAY_MS);
             } catch (Exception e) {
                 LOGGER.error("Unexpected exception encountered. Skipping resolution.", e);
             } finally {

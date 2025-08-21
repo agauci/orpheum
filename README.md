@@ -89,7 +89,7 @@ To view logs from set up service:
 - Add the {{local_agent_url}} to the let's encrypt command (see backstage/src/main/resources/Dockerfile)
 - Set up the Orpheum Unifi Agent as described above.
 - Add the new site configuration on Backstage's side at backstage/src/main/resources/application.yaml
-
+T
 ## TO DO
 - If we migrate from the current docker compose based solution, we'll need to install a systemctl based solution for backstage similar to the agent. Currently, restarts are handled by docker compose.
 - To Limit traffic from general public? 
@@ -102,6 +102,7 @@ To view logs from set up service:
 - To sniff traffic landing on unifi gateway related to dhcp, run this command: tcpdump -i br0 port 67 or port 68 -n -vv	
 - To verify when the certificate used by the orpheum agent expires:  openssl x509 -in fullchain.pem -noout -enddate
 - Command to renew certificate
+- To obtain snapshot of gateway status: echo "=== CPU Usage ==="; mpstat 1 1 | awk '/Average:/ {print 100 - $12 "% used"}'; echo "=== Memory Usage ==="; free -h; echo "=== Disk Space ==="; df -h /
 - Initial testing seems to show that if the captive portal state API returns "captive": true, but the device is already authorised, the device will ignore the API direction and connect. This needs to be tested further.
 	
 	

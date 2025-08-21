@@ -104,8 +104,15 @@ public class GatewayAuthorisationRunnable implements Runnable {
             LOGGER.debug("Device already resolved by IP from gateway. [Device:{}]", device);
         } else {
             LOGGER.debug("Unable to readily cache device since IP is not known from request. Attempting to resolve via manager. [Request:{}]", pendingAuthorisationRequest);
-            device = GatewayAuthorisationService.resolveDeviceByMacs(pendingAuthorisationRequest.macAddress(), pendingAuthorisationRequest.accessPointMacAddress()).get();
-            LOGGER.debug("Resolved device from gateway by MAC & AP mac. [Device:{}, Request:{}]", device, pendingAuthorisationRequest);
+            Optional<UnifiGatewayActiveDevice> resolvedDeviceByMacs = GatewayAuthorisationService.resolveDeviceByMacs(pendingAuthorisationRequest.macAddress(), pendingAuthorisationRequest.accessPointMacAddress());
+
+            if (resolvedDeviceByMacs.isPresent()) {
+                device = resolvedDeviceByMacs.get();
+                LOGGER.debug("Resolved device from gateway by MAC & AP mac. [Device:{}, Request:{}]", device, pendingAuthorisationRequest);
+            } else {
+                LOGGER.warn("Unable to resolve device from gateway by MAC & AP mac in time. Skipping addition of device to cache. [Request:{}]", pendingAuthorisationRequest);
+                return;
+            }
         }
 
         GatewayAuthorisationService.addAuthorisedDeviceToCache(device);

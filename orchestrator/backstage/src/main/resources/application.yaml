@@ -51,7 +51,7 @@ backstage:
     # Run verification every minute
     period-ms: 60000
     # Warnings will be triggered every 10 minutes
-    warning-interval-ms: 60000
+    warning-interval-ms: 600000
     verifier:
       DATABASE:
           # 90 minute tolerance
