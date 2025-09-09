@@ -6,219 +6,276 @@
     <title>The Orpheum Malta - Wi-Fi Access</title>
     <link href="/assets/fonts/PlayFairDisplay.css" rel="stylesheet">
     <style>
-    html {
-      /* Set the background image permanently */
-      background: url('/assets/background.jpg') no-repeat center center/cover;
+        html {
+            /* Set the background image permanently */
+            background: url('/assets/background.jpg') no-repeat center center/cover;
 
-      /* Add a base background color that shows during loading */
-      background-color: #2F4858;
+            /* Add a base background color that shows during loading */
+            background-color: #2F4858;
 
-      /* Use opacity for the fade-in effect instead */
-      animation: fadeIn 1s ease-in;
-    }
+            /* Use opacity for the fade-in effect instead */
+            animation: fadeIn 1s ease-in;
+        }
 
-    /* Create a simple fade-in animation for the whole page */
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+        /* Create a simple fade-in animation for the whole page */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
-    /* Skip the problematic preloading technique */
+        /* Skip the problematic preloading technique */
 
-    body, html {
-      margin: 0;
-      padding: 0;
-      font-family: 'Playfair Display', serif;
-      height: 100%;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Playfair Display', serif;
+            height: 100%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
 
-    .overlay {
-      background-color: rgba(0, 0, 0, 0.6);
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.6);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
 
-      /* Add a slightly delayed fade-in for overlay */
-      animation: fadeIn 1s ease-in 0.2s backwards;
-    }
+            /* Add a slightly delayed fade-in for overlay */
+            animation: fadeIn 1s ease-in 0.2s backwards;
+        }
 
-    .container {
-      position: relative;
-      z-index: 2;
-      padding: 40px 20px;
-      max-width: 600px;
-      width: 90%;
+        .container {
+            position: relative;
+            z-index: 2;
+            padding: 40px 20px;
+            max-width: 600px;
+            width: 90%;
 
-      /* Add a slight animation for content with delay */
-      animation: slideUp 0.8s ease-out 0.4s backwards;
-    }
+            /* Add a slight animation for content with delay */
+            animation: slideUp 0.8s ease-out 0.4s backwards;
+        }
 
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    /* Rest of your CSS remains unchanged */
-    .logo img {
-      width: 90%;
-      height: auto;
-      margin-bottom: 20px;
-    }
+        /* Rest of your CSS remains unchanged */
+        .logo img {
+            width: 90%;
+            height: auto;
+            margin-bottom: 20px;
+        }
 
-    h1 {
-      font-size: 2.2em;
-      margin-bottom: 20px;
-    }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+        }
 
-    p {
-      margin-bottom: 20px;
-      line-height: 1.5em;
-    }
+        p {
+            margin-bottom: 20px;
+            line-height: 1.5em;
+        }
 
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin-top: 20px;
-      margin-bottom: 30px;
-    }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
 
-    input[type="text"], input[type="email"] {
-      padding: 12px;
-      font-size: 1em;
-      border: none;
-      border-radius: 5px;
-    }
+        input[type="text"], input[type="email"] {
+            padding: 12px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+        }
 
-    input.invalid {
-      border: 2px solid red;
-    }
+        input.invalid {
+            border: 2px solid red;
+        }
 
-    .error-message {
-      color: red;
-      font-size: 0.9em;
-      display: none;
-      margin-top: -10px;
-    }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            display: none;
+            margin-top: -10px;
+        }
 
-    label {
-      display: flex;
-      align-items: center;
-      font-size: 0.9em;
-      margin-top: 10px;
-    }
+        label {
+            display: flex;
+            align-items: center;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
 
-    input[type="checkbox"] {
-      margin-right: 8px;
-    }
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
 
-    button {
-      padding: 12px;
-      font-size: 1em;
-      border: none;
-      border-radius: 25px;
-      background-color: #EBECE6;
-      color: #333;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: all 0.3s ease;
-    }
+        button {
+            padding: 12px;
+            font-size: 1em;
+            border: none;
+            border-radius: 25px;
+            background-color: #EBECE6;
+            color: #333;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
 
-    button:hover {
-      background-color: #2F4858;
-      color: #fff;
-    }
+        button:hover {
+            background-color: #2F4858;
+            color: #fff;
+        }
 
-    #loader {
-      display: none;
-      font-size: 1em;
-      margin-top: 20px;
-      justify-content: center;
-      align-items: center;
-    }
+        /* Primary connect button - prominent and attractive */
+        #submit-btn {
+            background: linear-gradient(135deg, #EBECE6, #d4d5cf);
+            box-shadow: 0 4px 15px rgba(235, 236, 230, 0.3);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transform: scale(1);
+            transition: all 0.3s ease;
+        }
 
-    .footer {
-      margin-top: 30px;
-      font-size: 0.9em;
-    }
+        #submit-btn:hover {
+            background: linear-gradient(135deg, #2F4858, #1a2a35);
+            box-shadow: 0 6px 20px rgba(47, 72, 88, 0.4);
+            transform: scale(1.02);
+        }
 
-    .footer a {
-      color: white;
-      margin: 0 10px;
-      text-decoration: none;
-      transition: all 0.3s ease;
-    }
+        /* Skip button - subtle and de-emphasized */
+        #skip-btn {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.85em;
+            font-weight: normal;
+            padding: 8px 16px;
+            margin-top: 15px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
 
-    .footer a:hover {
-      color: #E7E6E3;
-    }
+        #skip-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
 
-    .spinner {
-      margin: 10px;
-      width: 30px;
-      height: 30px;
-      border: 5px solid rgba(0, 0, 0, 0.1);
-      border-top: 5px solid #EBECE6;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
+        #loader {
+            display: none;
+            font-size: 1em;
+            margin-top: 20px;
+            justify-content: center;
+            align-items: center;
+        }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+        }
 
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 1.5em;
-      }
+        .footer a {
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
 
-      .logo img {
-        width: 100%;
-        margin-bottom: 0px;
-        margin-top: 20px;
-      }
+        .footer a:hover {
+            color: #E7E6E3;
+        }
 
-      button {
-        margin-top: 0px;
-      }
+        .spinner {
+            margin: 10px;
+            width: 30px;
+            height: 30px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #EBECE6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
 
-      .footer {
-        margin-top: 20px;
-        font-size: 0.9em;
-      }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-      form {
-        margin-bottom: 10px;
-      }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-      label {
-        margin-top: 0px;
-      }
+        .skip-text {
+            font-size: 0.75em;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 5px;
+            font-style: italic;
+        }
 
-      input[type="text"], input[type="email"] {
-        height: 10px;
-        font-size: 0.9em;
-      }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5em;
+            }
 
-      #loader {
-        margin-top: 0px;
-      }
-    }
-  </style>
+            .logo img {
+                width: 100%;
+                margin-bottom: 0px;
+                margin-top: 20px;
+            }
+
+            button {
+                margin-top: 0px;
+            }
+
+            .footer {
+                margin-top: 20px;
+                font-size: 0.9em;
+            }
+
+            form {
+                margin-bottom: 10px;
+            }
+
+            label {
+                margin-top: 0px;
+            }
+
+            input[type="text"], input[type="email"] {
+                height: 10px;
+                font-size: 0.9em;
+            }
+
+            #loader {
+                margin-top: 0px;
+            }
+
+            #skip-btn {
+                font-size: 0.8em;
+                padding: 6px 12px;
+            }
+
+            .skip-text {
+                font-size: 0.7em;
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="overlay"></div>
@@ -240,7 +297,13 @@
             <input type="checkbox" name="consent" required>
             <span th:text="${consentText}"></span>
         </label>
-        <button type="submit" id="submit-btn">Connect to Wi-Fi</button>
+
+        <div class="button-group">
+            <button type="submit" id="submit-btn">Connect to Wi-Fi</button>
+            <button type="button" id="skip-btn">Continue without registration</button>
+            <div class="skip-text">No exclusive offers • No return-guest benefits</div>
+        </div>
+
         <div id="loader">
             <div class="spinner" id="spinner" style="display: none"></div>
             <span>Connecting, please wait ...</span>
@@ -259,24 +322,53 @@
 
 <script>
     document.getElementById('wifi-form').addEventListener('submit', function(event) {
-      const emailInput = document.getElementById('email');
-      const errorDiv = document.getElementById('email-error');
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailInput = document.getElementById('email');
+        const errorDiv = document.getElementById('email-error');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      if (!emailRegex.test(emailInput.value)) {
-        emailInput.classList.add('invalid');
-        errorDiv.style.display = 'block';
-        event.preventDefault();
-        return;
-      } else {
-        emailInput.classList.remove('invalid');
-        errorDiv.style.display = 'none';
-      }
+        if (!emailRegex.test(emailInput.value)) {
+            emailInput.classList.add('invalid');
+            errorDiv.style.display = 'block';
+            event.preventDefault();
+            return;
+        } else {
+            emailInput.classList.remove('invalid');
+            errorDiv.style.display = 'none';
+        }
 
-      document.getElementById('loader').style.display = 'flex';
-      document.getElementById('submit-btn').style.display = 'none';
-      document.getElementById('spinner').style.display = 'block';
+        document.getElementById('loader').style.display = 'flex';
+        document.getElementById('submit-btn').style.display = 'none';
+        document.getElementById('skip-btn').style.display = 'none';
+        document.getElementById('spinner').style.display = 'block';
     });
-  </script>
+
+    // Handle skip button
+    document.getElementById('skip-btn').addEventListener('click', function() {
+        // Create a form for skip action
+        const skipForm = document.createElement('form');
+        skipForm.method = 'POST';
+        skipForm.action = '/authorise'; // Same authorise endpoint
+
+        // Add hidden fields for network authentication
+        const hiddenFields = document.querySelectorAll('input[type="hidden"]');
+        hiddenFields.forEach(field => {
+            const newField = document.createElement('input');
+            newField.type = 'hidden';
+            newField.name = field.name;
+            newField.value = field.value;
+            skipForm.appendChild(newField);
+        });
+
+        document.body.appendChild(skipForm);
+
+        // Show loading state
+        document.getElementById('loader').style.display = 'flex';
+        document.getElementById('submit-btn').style.display = 'none';
+        document.getElementById('skip-btn').style.display = 'none';
+        document.getElementById('spinner').style.display = 'block';
+
+        skipForm.submit();
+    });
+</script>
 </body>
 </html>

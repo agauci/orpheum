@@ -42,8 +42,10 @@ public class CaptivePortalHtmlController {
     private Long authorisationRequestTimeoutMs;
 
     @GetMapping(value = "/")
-    public String indexBasic() {
+    public String indexBasic(Model model) {
         log.trace("Access to basic portal detected.");
+        model.addAttribute("consentText", portalConfig.getConsentText());
+
         return "index";
     }
 
@@ -91,14 +93,14 @@ public class CaptivePortalHtmlController {
 
     @PostMapping(value = "/authorise")
     public String authorise(Model model,
-                            @RequestParam(name="firstName") String firstName,
-                            @RequestParam(name="lastName") String lastName,
-                            @RequestParam(name="email") String email,
+                            @RequestParam(name="firstName", required = false) String firstName,
+                            @RequestParam(name="lastName", required = false) String lastName,
+                            @RequestParam(name="email", required = false) String email,
                             @RequestParam(name="id", required = false) String macAddress,
                             @RequestParam(name="ap", required = false) String accessPointMacAddress,
                             @RequestParam(name="ip", required = false) String ip,
                             @RequestParam(name="ssid") String siteIdentifier,
-                            @RequestParam(name="t") Long timestamp) throws ExecutionException, InterruptedException {
+                            @RequestParam(name="t", required = false) Long timestamp) throws ExecutionException, InterruptedException {
         log.debug("Received portal authorise request. [MAC Address: {}, Access Point MAC Address: {}, IP: {}, Site Identifier: {}, First name: {}, last name: {}, email: {}]",
                 macAddress, accessPointMacAddress, ip, siteIdentifier, firstName, lastName, email);
 
