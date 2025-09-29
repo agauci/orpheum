@@ -36,7 +36,7 @@ EOF
 echo "Creating restart service file..."
 cat <<EOF | sudo tee "$RESTART_SERVICE" > /dev/null
 [Unit]
-Description=Restart $APP_NAME weekly on Tuesday at 3AM
+Description=Restart $APP_NAME on Tuesday, Thursday and Sunday at 3AM
 
 [Service]
 Type=oneshot
@@ -49,10 +49,10 @@ EOF
 echo "Creating restart timer file..."
 cat <<EOF | sudo tee "$RESTART_TIMER" > /dev/null
 [Unit]
-Description=Weekly restart timer for $APP_NAME
+Description=Restart timer for $APP_NAME (Tue,Thu,Sun at 03:00)
 
 [Timer]
-OnCalendar=Tue *-*-* 03:00:00
+OnCalendar=Tue,Thu,Sun *-*-* 03:00:00
 Persistent=true
 
 [Install]
