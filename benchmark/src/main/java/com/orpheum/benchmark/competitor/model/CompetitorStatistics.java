@@ -1,4 +1,4 @@
-package com.orpheum.benchmark.competitor;
+package com.orpheum.benchmark.competitor.model;
 
 import com.orpheum.benchmark.model.PriceSpan;
 

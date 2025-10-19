@@ -1,5 +1,6 @@
-package com.orpheum.benchmark.competitor;
+package com.orpheum.benchmark.competitor.support;
 
+import com.orpheum.benchmark.competitor.model.CompetitorStatistics;
 import com.orpheum.benchmark.model.PriceSpan;
 
 import java.math.BigDecimal;
@@ -23,7 +24,7 @@ public class CompetitorStatisticsExtractor {
                 .sorted(Comparator.comparing(CompetitorStatisticsExtractor::toLocalDate))
                 .toList();
 
-        LocalDate minDate = toLocalDate(spans.get(0));
+        LocalDate minDate = LocalDate.now();
 
         // Build helper predicates
         Predicate<PriceSpan> next7 = ps -> isWithinDays(ps, minDate, 0, 7);

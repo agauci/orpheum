@@ -1,12 +1,19 @@
-package com.orpheum.benchmark.competitor;
+package com.orpheum.benchmark.competitor.service;
 
+import com.orpheum.benchmark.competitor.support.CompetitorReportGenerator;
+import com.orpheum.benchmark.competitor.model.CompetitorStatistics;
+import com.orpheum.benchmark.competitor.support.CompetitorStatisticsExtractor;
+import com.orpheum.benchmark.config.BenchmarkProperties;
+import com.orpheum.benchmark.config.CompetitorConfig;
 import com.orpheum.benchmark.model.CalendarDay;
 import com.orpheum.benchmark.model.CalendarMonth;
 import com.orpheum.benchmark.model.PriceSpan;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -15,6 +22,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
@@ -38,13 +46,37 @@ import java.awt.event.InputEvent;
  */
 @Component
 @Slf4j
+@AllArgsConstructor(onConstructor_ = @Autowired)
 public class CompetitorAnalysisService {
 
     private static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
-    @PostConstruct
-    public void init() {
-        System.out.println(extractCompetitorData());
+    BenchmarkProperties benchmarkProperties;
+
+//    @PostConstruct
+//    public void init() {
+//        processReport();
+//    }
+
+    public void processReport() {
+        List<PriceSpan> groupPriceSpans = new ArrayList<>();
+        List<CompetitorData> competitorAnalysisData = new ArrayList<>();
+
+        benchmarkProperties.getPropertyGroups().forEach((groupKey, group) -> {
+            group.getCompetitors().forEach((competitorKey, competitorConfig) -> {
+                Pair<CompetitorStatistics, Map<Month, CalendarMonth>> competitorData = extractCompetitorData(competitorConfig);
+                groupPriceSpans.addAll(competitorData.getLeft().spans());
+                competitorAnalysisData.add(new CompetitorData(competitorData.getLeft(), competitorData.getRight(), competitorConfig));
+            });
+
+            System.out.println(CompetitorReportGenerator.generateGroupReport(group, CompetitorStatisticsExtractor.compute(groupPriceSpans)));
+
+            competitorAnalysisData.forEach(data ->
+                System.out.println(CompetitorReportGenerator.generateCompetitorReport(data.competitorConfig, data.competitorStatistics, data.calendarMonths))
+            );
+
+            System.out.println(" =========== END OF REPORT =========== \n\n");
+        });
     }
 
     /**
@@ -52,21 +84,19 @@ public class CompetitorAnalysisService {
      * 
      * @return Updated competitor data with extracted information
      */
-    public CompetitorStatistics extractCompetitorData() {
+    public Pair<CompetitorStatistics, Map<Month, CalendarMonth>> extractCompetitorData(CompetitorConfig competitorConfig) {
         // Initialize WebDriver
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--start-maximized", "--ignore-certificate-errors");
         WebDriver driver = new ChromeDriver(options);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        System.setProperty("java.awt.headless", "false");
 
         try {
             // Navigate to the URL (using the sample URL from the issue description)
-            String url = "https://www.airbnb.com.mt/rooms/1405209871580505002";
-            driver.get(url);
+            driver.get(competitorConfig.getUrl());
 
             // Wait for the page to load
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("button[aria-label='Close']")));
             WebElement closeButton = driver.findElement(By.cssSelector("button[aria-label='Close']"));
             closeButton.click();
@@ -87,18 +117,14 @@ public class CompetitorAnalysisService {
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", calendarElement);
 
             Set<Integer> calendarMonthsInteractions = new HashSet<>();
-            calendarMonthsInteractions.add(priceSpans.get(0).startCalendarMonth());
-            calendarMonthsInteractions.add(priceSpans.get(0).endCalendarMonth());
+            LocalDate now = LocalDate.now();
+            calendarMonthsInteractions.add(now.getMonth().getValue());
+            calendarMonthsInteractions.add(now.getMonth().plus(1).getValue());
             List<PriceSpan> decoratedPriceSpans = priceSpans.stream().map(span -> extractPriceForSpan(span, driver, calendarMonthsInteractions)).toList();
 
-            System.out.println(CompetitorReportGenerator.generateReport(
-                    CompetitorStatisticsExtractor.compute(decoratedPriceSpans),
-                    monthCalendarMonthMap
-            ));
-
-            return null;
+            return Pair.of(CompetitorStatisticsExtractor.compute(decoratedPriceSpans), monthCalendarMonthMap);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to extract competitor data", e);
             return null;
         } finally {
             // Close the browser
@@ -225,10 +251,16 @@ public class CompetitorAnalysisService {
         WebElement endCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + span.endCalendarMonth() + "/" + padDay(span.endDay()) + "/" + span.endCalendarYear() + "']"));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", endCalendarElement);
 
+//        WebElement price = new WebDriverWait(driver, Duration.ofSeconds(10))
+//                .until(ExpectedConditions.presenceOfElementLocated(
+//                        By.cssSelector("[data-testid='book-it-default'] span[style*='--pricing-guest-primary-line-unit-price-text-decoration: none']")
+//                ));
         WebElement price = new WebDriverWait(driver, Duration.ofSeconds(10))
                 .until(ExpectedConditions.presenceOfElementLocated(
-                        By.cssSelector("[data-testid='book-it-default'] span[style*='--pricing-guest-primary-line-unit-price-text-decoration: none']")
+                        By.cssSelector("[data-testid='book-it-default'] button[role='button'] > span:first-child")
                 ));
+
+        //--pricing-guest-display-price-alignment: flex-start;
 
         JavascriptExecutor js = (JavascriptExecutor) driver;
         String text = (String) js.executeScript("return arguments[0].innerText;", price);
@@ -274,4 +306,7 @@ public class CompetitorAnalysisService {
 
         return new BigDecimal(numeric);
     }
+
+    private record CompetitorData(CompetitorStatistics competitorStatistics, Map<Month, CalendarMonth> calendarMonths, CompetitorConfig competitorConfig) { }
+
 }
