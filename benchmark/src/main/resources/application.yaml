@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: benchmark
+  datasource:
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/orpheum-benchmark}
+#   The Postgres JDBC driver by default attempts to use server-side prepared statements for performance reasons. Supabase employs pgbouncer, which disallows the use of prepared
+#   statements in transaction mode. Therefore, it is crucial to add prepareThreshold=0 to the URL to disable the JDBC driver's default behaviour.
+#   NEON DB Production
+#   url: "jdbc:postgresql://ep-lucky-sun-a2gtieye-pooler.eu-central-1.aws.neon.tech/orpheum?user=neondb_owner&password=npg_I0PdsLFtUf2M&sslmode=require&channelBinding=require&prepareThreshold=0"
+#   STAGING
+#   url: "jdbc:postgresql://ep-aged-base-a2c480dv-pooler.eu-central-1.aws.neon.tech/orpheum?user=neondb_owner&password=npg_aG2UVZPSTj9m&sslmode=require&channelBinding=require&prepareThreshold=0"
+    username: ${POSTGRES_USER:"postgres"}
+    password: ${POSTGRES_PASSWORD:"root"}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 300000         # 5 min
+      connection-timeout: 30000    # 30s
+      max-lifetime: 1800000        # 30 min
+  flyway:
+    enabled: true
+
+orpheum:
+  benchmark:
+    property-groups:
+      2bed-equal-quality-gzira:
+        title: 2 Bed Properties In Gzira Of Comparable Quality
+        description: A group of competitors in the Gzira area having 2 beds and of comparable quality/amenities
+        competitors:
+          refined-elegance:
+            title: Refined Elegance By The Sea
+            url: https://www.airbnb.com.mt/rooms/1405209871580505002
+          good-vibes:
+            title: Steps from the Seafront - Good vibes only!
+            urL: https://www.airbnb.com.mt/rooms/1378332450577754619
+          gabriel-apartment:
+            title: Gabriel's - 2 bedroom Apartment by Solea
+            url: https://www.airbnb.com.mt/rooms/1503474773108657194
