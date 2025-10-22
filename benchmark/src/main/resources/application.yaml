@@ -19,7 +19,7 @@ spring:
       client:
         enabled: false
     openai:
-      api-key: ${OPENAI_API_KEY:abc}
+      api-key: ${OPENAI_API_KEY:}
 logging:
   level:
     root: INFO                  # Root logger level
