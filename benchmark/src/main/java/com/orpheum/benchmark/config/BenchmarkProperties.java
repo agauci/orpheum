@@ -14,5 +14,5 @@ import java.util.Map;
 @Configuration
 @ConfigurationProperties(prefix = "orpheum.benchmark")
 public class BenchmarkProperties {
-    private Map<String, PropertyGroup> propertyGroups;
+    private Map<String, CompetitorGroup> competitorGroups;
 }

@@ -1,0 +1,156 @@
+openapi: 3.0.3
+info:
+  title: Orpheum Benchmark API
+  description: API for competitor benchmark related functionality
+  version: 1.0.0
+  contact:
+    name: Orpheum Benchmark Team
+    email: admin@orpheum.com.mt
+servers:
+  - url: http://localhost:8080
+    description: Local environment
+paths:
+  /airgpt/conversation:
+    post:
+      summary: Start a new conversation
+      description: Starts a new conversation with the AirGPT assistant
+      operationId: startAirGptConversation
+      tags:
+        - AirGPT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  description: The initial user prompt to start the conversation
+                  example: "Analyse the competition's prices and availability across all the competitor groups, and come up with an appropriate pricing strategy."
+      responses:
+        '200':
+          description: Conversation started successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirGptConversationStartResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /airgpt/conversation/{conversationId}:
+    post:
+      summary: Continue an existing conversation
+      description: Continues an existing conversation with the AirGPT assistant
+      operationId: continueAirGptConversation
+      tags:
+        - AirGPT
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          description: The unique identifier of the conversation
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  description: The user prompt to continue the conversation
+                  example: "Can you explain how the pricing model was computed?"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirGptConversationContinueResponse'
+        '404':
+          description: Conversation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    KeyValuePair:
+      type: object
+      required:
+        - key
+        - value
+      properties:
+        key:
+          type: string
+          description: The key
+        value:
+          type: string
+          description: The value
+    # AirGPT schemas
+    AirGptConversationStartResponse:
+      type: object
+      required:
+        - conversationId
+        - assistantResponse
+        - conversationTitle
+      properties:
+        conversationId:
+          type: string
+          format: uuid
+          description: The unique identifier for the conversation
+          example: "57d40e0a-aa57-4184-9869-2856c9d97700"
+        assistantResponse:
+          type: string
+          description: The response from the BetGPT assistant
+          example: "The following is the suggested pricing model to be adopted."
+        conversationTitle:
+          type: string
+          description: The title of the conversation
+          example: "Pricing Model for 20/10/2025"
+
+    AirGptConversationContinueResponse:
+      type: object
+      required:
+        - assistantResponse
+      properties:
+        assistantResponse:
+          type: string
+          description: The response from the BetGPT assistant
+          example: "The pricing model was computed as a result of the competitors' availability and prices."
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error message

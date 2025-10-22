@@ -2,7 +2,7 @@ package com.orpheum.benchmark.competitor.support;
 
 import com.orpheum.benchmark.competitor.model.CompetitorStatistics;
 import com.orpheum.benchmark.config.CompetitorConfig;
-import com.orpheum.benchmark.config.PropertyGroup;
+import com.orpheum.benchmark.config.CompetitorGroup;
 import com.orpheum.benchmark.model.CalendarDay;
 import com.orpheum.benchmark.model.CalendarMonth;
 import com.orpheum.benchmark.model.PriceSpan;
@@ -16,18 +16,20 @@ import java.util.Map;
 
 public class CompetitorReportGenerator {
 
-    public static String generateGroupReport(PropertyGroup propertyGroup, CompetitorStatistics stats) {
+    public static String generateGroupReport(CompetitorGroup competitorGroup, CompetitorStatistics stats) {
         StringBuilder md = new StringBuilder();
 
         // ===== HEADER =====
-        md.append("# Group ").append(propertyGroup.getTitle()).append(" Pricing & Availability Report\n\n");
-        md.append("Group description: ").append(propertyGroup.getDescription()).append("\n");
-        md.append("Location: ").append(propertyGroup.getLocation()).append("\n");
-        md.append("Bedroom count: ").append(propertyGroup.getBedroomCount()).append("\n");
-        md.append("Finishing level: ").append(propertyGroup.getFinishingLevel()).append("\n");
-        md.append("Amenities level: ").append(propertyGroup.getAmenitiesLevel()).append("\n");
-        md.append("Has view: ").append(propertyGroup.isHasView()).append("\n");
-        md.append("Has terrace: ").append(propertyGroup.isHasTerrace()).append("\n\n");
+        md.append("# Group ").append(competitorGroup.getTitle()).append(" Pricing & Availability Report\n\n");
+        md.append("Group description: ").append(competitorGroup.getDescription()).append("\n");
+        md.append("Is internal group: ").append(competitorGroup.getIsInternalGroup()).append("\n");
+        md.append("Location: ").append(competitorGroup.getLocation()).append("\n");
+        md.append("Bedroom count: ").append(competitorGroup.getBedroomCount()).append("\n");
+        md.append("Maximum occupancy count: ").append(competitorGroup.getMaxOccupancyCount()).append("\n");
+        md.append("Finishes level: ").append(competitorGroup.getFinishesLevel()).append("\n");
+        md.append("Amenities level: ").append(competitorGroup.getAmenitiesLevel()).append("\n");
+        md.append("Has view: ").append(competitorGroup.isHasView()).append("\n");
+        md.append("Has terrace: ").append(competitorGroup.isHasTerrace()).append("\n\n");
 
         // ===== IMMEDIATE TERM (0-7 days) =====
         md.append("### Immediate Term (Next 7 Days)\n");

@@ -13,25 +13,64 @@ spring:
       max-lifetime: 1800000        # 30 min
   flyway:
     enabled: true
+  ai:
+    chat:
+      client:
+        enabled: false
+    openai:
+      api-key: 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
+logging:
+  level:
+    root: INFO                  # Root logger level
+    org.springframework: INFO
+    com.orpheum: DEBUG
+    org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: DEBUG
+    #org.springframework.web.client: DEBUG
+    #org.springframework.ai.openai: DEBUG
+    #org.springframework.jdbc.core: DEBUG
+    #org.springframework.data.jdbc.repository.query: DEBUG
+
 
 orpheum:
   benchmark:
-    property-groups:
-      2bed-equal-quality-gzira:
-        title: 2 Bed Properties In Gzira Of Comparable Quality
+    competitor-groups:
+      1bed-4-occupancy-very-high-finish-medium-amenities-no-view-gzira:
+        title: 1 Bed properties in Gzira with very high amenities and finish level (internal)
+        description: An internal group for 1 bed properties in Gzira with very high amenities and finish level
+        is-internal-group: true
+        location: Gzira
+        bedroom-count: 1
+        max-occupancy-count: 4
+        finishes-level: VERY_HIGH
+        amenities-level: VERY_HIGH
+        view-level: SIDE_SEA_VIEW
+        proximity-to-seafront: VERY_CLOSE
+        has-terrace: true
+      2bed-4-occupancy-high-finish-medium-amenities-no-view-gzira:
+        title: 2 Bed Properties In Gzira Of High quality finish and good amenities with no view
         description: A group of competitors in the Gzira area having 2 beds and of comparable quality/amenities
+        is-internal-group: false
         location: Gzira
         bedroom-count: 2
-        finishing-level: HIGH
+        max-occupancy-count: 4
+        finishes-level: HIGH
         amenities-level: MEDIUM
-        has-view: false
+        view-level: NONE
+        proximity-to-seafront: CLOSE
+        has-terrace: false
         competitors:
           good-vibes:
             title: Steps from the Seafront - Good vibes only!
             url: https://www.airbnb.com.mt/rooms/1378332450577754619
+            window-size: 3
+            open-for-bookings: true
           refined-elegance:
             title: Refined Elegance By The Sea
             url: https://www.airbnb.com.mt/rooms/1405209871580505002
+            window-size: 3
+            open-for-bookings: true
           gabriel-apartment:
             title: Gabriel's - 2 bedroom Apartment by Solea
             url: https://www.airbnb.com.mt/rooms/1503474773108657194
+            window-size: 3
+            open-for-bookings: true

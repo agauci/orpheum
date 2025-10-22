@@ -1,7 +1,8 @@
 package com.orpheum.benchmark.model;
 
-public enum FinishingLevel {
+public enum FinishesLevel {
     BASIC,
     MEDIUM,
-    HIGH
+    HIGH,
+    VERY_HIGH
 }

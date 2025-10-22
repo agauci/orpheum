@@ -21,10 +21,10 @@ public class BenchmarkConfig {
     @PostConstruct
     public void init() {
         // Set the keys for property groups and competitors
-        if (benchmarkProperties.getPropertyGroups() != null) {
-            for (Map.Entry<String, PropertyGroup> groupEntry : benchmarkProperties.getPropertyGroups().entrySet()) {
+        if (benchmarkProperties.getCompetitorGroups() != null) {
+            for (Map.Entry<String, CompetitorGroup> groupEntry : benchmarkProperties.getCompetitorGroups().entrySet()) {
                 String groupKey = groupEntry.getKey();
-                PropertyGroup group = groupEntry.getValue();
+                CompetitorGroup group = groupEntry.getValue();
                 group.setKey(groupKey);
 
                 if (group.getCompetitors() != null) {
