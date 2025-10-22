@@ -44,10 +44,10 @@ public class AirGptService {
     private Resource airGptPrompt;
 
     @Transactional
-    public AirGptConversationOutcome startConversation(String userPrompt) {
+    public AirGptConversationOutcome startConversation(String userPrompt, String internalGroupId) {
         UUID conversationId = UUIDs.create();
 
-        return processPrompt(conversationId, userPrompt, true);
+        return processPrompt(conversationId, userPrompt, internalGroupId, true);
     }
 
     @Transactional
@@ -57,13 +57,13 @@ public class AirGptService {
             throw new RuntimeException("Unable to find conversation with provided ID " + conversationId);
         }
 
-        return processPrompt(conversationId, userPrompt, false);
+        return processPrompt(conversationId, userPrompt, conversation.get().getInternalGroupId(), false);
     }
 
-    private AirGptConversationOutcome processPrompt(UUID conversationId, String userPrompt, boolean isNewConversation) {
+    private AirGptConversationOutcome processPrompt(UUID conversationId, String userPrompt, String internalGroupId, boolean isNewConversation) {
         //verifyPromptLimits(subscriptionLevel, userId);
 
-        final String text = generateAirGptPromptText(isNewConversation, conversationId);
+        final String text = generateAirGptPromptText(isNewConversation, internalGroupId, conversationId);
         final OpenAiChatOptions chatOptions = buildChatOptions();
         final Long startTime = System.currentTimeMillis();
 
@@ -83,7 +83,7 @@ public class AirGptService {
                 .entity(AirGptLlmOutcome.class);
 
         if (isNewConversation) {
-            conversationRepository.save(AirGptConversation.create(conversationId, extractionOutcome.conversationTitle()).markAsNew());
+            conversationRepository.save(AirGptConversation.create(conversationId, extractionOutcome.conversationTitle(), internalGroupId).markAsNew());
         }
 
         decoratePromptWithLlmOutcome(conversationId, extractionOutcome, System.currentTimeMillis() - startTime, chatOptions);
@@ -91,14 +91,15 @@ public class AirGptService {
         return new AirGptConversationOutcome(conversationId, extractionOutcome);
     }
 
-    private String generateAirGptPromptText(boolean isNewConversation, UUID conversationId) {
+    private String generateAirGptPromptText(boolean isNewConversation, String internalGroupId, UUID conversationId) {
         return PromptTemplate.builder()
                 .renderer(StTemplateRenderer.builder().startDelimiterToken('<').endDelimiterToken('>').build())
                 .resource(airGptPrompt)
                 .build()
                 .render(Map.of(
                         "is_new_conversation", (isNewConversation) ? "yes" : "no",
-                        "conversation_id", conversationId.toString()
+                        "conversation_id", conversationId.toString(),
+                        "internal_group_id", internalGroupId
                 ));
     }
 

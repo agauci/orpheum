@@ -24,12 +24,17 @@ paths:
             schema:
               type: object
               required:
+                - internalGroupId
                 - prompt
               properties:
+                internalGroupId:
+                  type: string
+                  description: The internal competitor group ID being targeted
+                  example: "bedroom-very-high-finish-medium-amenities-side-sea-view-gzira"
                 prompt:
                   type: string
                   description: The initial user prompt to start the conversation
-                  example: "Analyse the competition's prices and availability across all the competitor groups, and come up with an appropriate pricing strategy."
+                  example: "Deliver on your mission to provide a pricing strategy for the internal group whose ID is provided, based on the information, rules and insights made available to you"
       responses:
         '200':
           description: Conversation started successfully

@@ -39,7 +39,7 @@ public class CompetitorStatisticsExtractor {
         BigDecimal avg7InclWeekend = average(spans, next7.and(PriceSpan::includesWeekend));
         BigDecimal std7 = standardDeviation(spans, next7);
         BigDecimal median7 = median(spans, next7);
-        BigDecimal weekendPremium = ratio(avg7InclWeekend, avg7NonWeekend);
+        BigDecimal weekendPremium = (avg7InclWeekend.compareTo(BigDecimal.ZERO) != 0)  ? ratio(avg7InclWeekend, avg7NonWeekend) : BigDecimal.ZERO;
 
         // --- 7 TO 14 DAYS ---
         BigDecimal avg7to14 = average(spans, days7to14);

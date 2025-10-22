@@ -24,7 +24,7 @@ public class AirGptController implements AirGptApi {
 
     @Override
     public ResponseEntity<AirGptConversationStartResponse> startAirGptConversation(StartAirGptConversationRequest request) {
-        return ResponseEntity.ok(startResponseMapper.map(service.startConversation(request.getPrompt())));
+        return ResponseEntity.ok(startResponseMapper.map(service.startConversation(request.getPrompt(), request.getInternalGroupId())));
     }
 
     @Override

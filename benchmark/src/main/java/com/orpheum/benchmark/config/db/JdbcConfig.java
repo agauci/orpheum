@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
+import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 
 import java.util.List;
 
 @Configuration
 @EnableJdbcAuditing
+@EnableJdbcRepositories(basePackages = "com.orpheum.benchmark")
 public class JdbcConfig extends AbstractJdbcConfiguration {
 
     @Autowired

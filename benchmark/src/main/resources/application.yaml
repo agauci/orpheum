@@ -2,9 +2,10 @@ spring:
   application:
     name: benchmark
   datasource:
-    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/orpheum-benchmark}
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/orpheum-benchmark?sslmode=disable}
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:root}
+    driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
@@ -18,7 +19,7 @@ spring:
       client:
         enabled: false
     openai:
-      api-key: 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
+      api-key: ${OPENAI_API_KEY:abc}
 logging:
   level:
     root: INFO                  # Root logger level
@@ -34,43 +35,475 @@ logging:
 orpheum:
   benchmark:
     competitor-groups:
-      1bed-4-occupancy-very-high-finish-medium-amenities-no-view-gzira:
-        title: 1 Bed properties in Gzira with very high amenities and finish level (internal)
-        description: An internal group for 1 bed properties in Gzira with very high amenities and finish level
+
+      # ============= INTERNAL =============
+
+      1bedroom-very-high-finish-medium-amenities-side-sea-view-gzira:
+        title: 1 bedroom properties in Gzira with very high amenities and finish level and side sea views (internal)
+        description: An internal group for 1 bedroom properties in Gzira with very high amenities and finish level and side sea views
         is-internal-group: true
         location: Gzira
         bedroom-count: 1
-        max-occupancy-count: 4
         finishes-level: VERY_HIGH
         amenities-level: VERY_HIGH
         view-level: SIDE_SEA_VIEW
         proximity-to-seafront: VERY_CLOSE
-        has-terrace: true
-      2bed-4-occupancy-high-finish-medium-amenities-no-view-gzira:
-        title: 2 Bed Properties In Gzira Of High quality finish and good amenities with no view
-        description: A group of competitors in the Gzira area having 2 beds and of comparable quality/amenities
+        competitors:
+          residenza-teatru:
+            title: Designer Penthouse by the Promenade | BBQ Terrace
+            url:  # https://airbnb.com.mt/h/oprheumteatru
+            window-size: 2
+            max-occupancy-count: 4
+            has-terrace: true
+            has-pool: false
+            has-barbecue: true
+            open-for-bookings: false
+            minimum-rate: 110
+            cleaning-fee: 60
+
+      # ============= GZIRA =============
+
+      1bedroom-medium-finish-medium-amenities-no-view-gzira:
+        title: 1 Bedroom Properties In Gzira Of medium quality finish and good amenities with no view
+        description: A group of competitors in the Gzira area having 1 bedroom, medium level of design & finishes, medium amenities. No views.
+        is-internal-group: false
+        location: Gzira
+        bedroom-count: 1
+        finishes-level: MEDIUM
+        amenities-level: MEDIUM
+        view-level: NONE
+        proximity-to-seafront: NOT_CLOSE
+        competitors:
+          bright-medium-apartment:
+            title: Spacious - Bright - Luxurious - 3 Minutes From Sea
+            url: https://www.airbnb.com.mt/rooms/923143952615000692
+            window-size: 2
+            max-occupancy-count: 3
+            has-terrace: false
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      1bedroom-medium-finish-medium-amenities-no-view-close-to-seafront-gzira:
+        title: 1 Bedroom Properties In Gzira Of medium quality finish and good amenities with no view, close to seafront
+        description: A group of competitors in the Gzira area having 1 bedroom, medium level of design & finishes, medium amenities. No views but close to seafront.
+        is-internal-group: false
+        location: Gzira
+        bedroom-count: 1
+        finishes-level: MEDIUM
+        amenities-level: MEDIUM
+        view-level: NONE
+        proximity-to-seafront: CLOSE
+        competitors:
+          rodrick-apartment:
+            title: Modern 1BD Apartment with Back Balcony & Sofa Bed
+            url: https://www.airbnb.com.mt/rooms/1233778539697244935
+            window-size: 3
+            max-occupancy-count: 4
+            has-terrace: false
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+          minimal-basic-bright-apartment:
+            title: Unique | Charming | Next to the Promenade
+            url: https://www.airbnb.com.mt/rooms/1321712872356613989
+            window-size: 3
+            max-occupancy-count: 3
+            has-terrace: false
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      2bedroom-medium-finish-medium-amenities-gzira:
+        title: 2 bedroom properties in Gzira with medium finish, medium amenities, and terrace
+        description: A group for 2 bedroom properties in Gzira featuring medium-quality finishes and amenities, including a terrace.
         is-internal-group: false
         location: Gzira
         bedroom-count: 2
-        max-occupancy-count: 4
+        finishes-level: MEDIUM
+        amenities-level: MEDIUM
+        view-level: NONE
+        proximity-to-seafront: CLOSE
+        competitors:
+          nevermind-penthouse-brooklyn-gzira:
+            title: Bright penthouse with large terrace near the sea
+            url: https://www.airbnb.com.mt/rooms/993263473867302603
+            window-size: 2
+            max-occupancy-count: 4
+            has-terrace: true
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+          conrad-penthouse-gzira:
+            title: Luxury Penthouse with Large Terrace | Near the Sea
+            url: https://www.airbnb.com.mt/rooms/1465118101841742723
+            window-size: 2
+            max-occupancy-count: 2
+            has-terrace: true
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      2bedroom-high-finish-medium-amenities-no-view-gzira:
+        title: 2 bedroom Properties In Gzira Of High quality finish and good amenities with no view
+        description: A group of competitors in the Gzira area having 2 bedrooms, high level of design & finishes, medium amenities. No views.
+        is-internal-group: false
+        location: Gzira
+        bedroom-count: 2
+        finishes-level: HIGH
+        amenities-level: MEDIUM
+        view-level: NONE
+        proximity-to-seafront: NOT_CLOSE
+        competitors:
+          gabriel-apartment:
+            title: Gabriel's - 2 bedroom Apartment by Solea
+            url: https://www.airbnb.com.mt/rooms/1503474773108657194
+            window-size: 2
+            max-occupancy-count: 4
+            has-terrace: false
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      2bedroom-high-finish-medium-amenities-no-view-close-to-seafront-gzira:
+        title: 2 bedroom Properties In Gzira Of High quality finish and good amenities with no view, close to seafront
+        description: A group of competitors in the Gzira area having 2 bedrooms, high level of design & finishes, medium amenities and close to the seafront. No views.
+        is-internal-group: false
+        location: Gzira
+        bedroom-count: 2
         finishes-level: HIGH
         amenities-level: MEDIUM
         view-level: NONE
         proximity-to-seafront: CLOSE
-        has-terrace: false
         competitors:
           good-vibes:
             title: Steps from the Seafront - Good vibes only!
             url: https://www.airbnb.com.mt/rooms/1378332450577754619
             window-size: 3
+            max-occupancy-count: 4
+            has-terrace: false
+            has-pool: false
+            has-barbecue: false
             open-for-bookings: true
           refined-elegance:
             title: Refined Elegance By The Sea
             url: https://www.airbnb.com.mt/rooms/1405209871580505002
             window-size: 3
+            max-occupancy-count: 4
+            has-terrace: false
+            has-pool: false
+            has-barbecue: false
             open-for-bookings: true
-          gabriel-apartment:
-            title: Gabriel's - 2 bedroom Apartment by Solea
-            url: https://www.airbnb.com.mt/rooms/1503474773108657194
+
+      3bedroom-medium-finish-medium-amenities-gzira:
+        title: 3 bedroom properties in Gzira with medium finish and amenities
+        description: A group for 3 bedroom properties in Gzira featuring medium-quality finishes and amenities.
+        is-internal-group: false
+        location: Gzira
+        bedroom-count: 3
+        finishes-level: MEDIUM
+        amenities-level: MEDIUM
+        view-level: NONE
+        proximity-to-seafront: CLOSE
+        competitors:
+          nevermind-brooklyn-gzira:
+            title: Bright & central getaway close to the sea
+            url: https://www.airbnb.com.mt/rooms/873542909548397167
+            window-size: 2
+            max-occupancy-count: 6
+            has-terrace: false
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      3bedroom-high-finish-high-amenities-with-view-gzira:
+        title: 3 bedroom properties in Gzira with high finish, high amenities, and skyline view
+        description: A group for 3 bedroom properties in Gzira featuring high-quality finishes and high-level amenities, offering attractive skyline views.
+        is-internal-group: false
+        location: Gzira
+        bedroom-count: 3
+        finishes-level: HIGH
+        amenities-level: MEDIUM
+        view-level: SKYLINE_VIEW
+        proximity-to-seafront: NOT_CLOSE
+        competitors:
+          nevermind-city-skyline-penthouse:
+            title: City Skyline Penthouse with Large Terrace & Views
+            url: https://www.airbnb.com.mt/rooms/1330533685950557724
+            window-size: 2
+            max-occupancy-count: 6
+            has-terrace: true
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      # ============= SLIEMA =============
+
+      1bedroom-high-finish-medium-amenities-no-view-sliema:
+        title: 1 Bedroom Properties In Sliema Of high quality finish and medium amenities with no view
+        description: A group of competitors in the Sliema area having 1 bedroom, High level of design & finishes, medium amenities. No views.
+        is-internal-group: false
+        location: Gzira
+        bedroom-count: 1
+        finishes-level: HIGH
+        amenities-level: MEDIUM
+        view-level: NONE
+        proximity-to-seafront: NOT_CLOSE
+        competitors:
+          sliema-loft-apartment:
+            title: Loft-style studio apartment
+            url: https://www.airbnb.com.mt/rooms/1479587920809341819
+            window-size: 1
+            max-occupancy-count: 2
+            has-terrace: false
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      2bedroom-medium-finish-medium-amenities-close-to-seafront-sliema:
+        title: 2 bedroom properties in Sliema with medium finish and amenities near the seafront
+        description: A group for 2 bedroom properties in Sliema featuring medium-quality finishes and amenities, located close to the seafront.
+        is-internal-group: false
+        location: Sliema
+        bedroom-count: 2
+        finishes-level: MEDIUM
+        amenities-level: MEDIUM
+        view-level: NONE
+        proximity-to-seafront: CLOSE
+        competitors:
+          mareluce-apartment:
+            title: MareLuce - Penthouse in Sliema
+            url: https://www.airbnb.com.mt/rooms/1451422964141597770
+            window-size: 2
+            max-occupancy-count: 4
+            has-terrace: true
+            has-pool: false
+            has-barbecue: true
+            open-for-bookings: true
+          sliema-stylish-apartment:
+            title: Sliema Stylish Penthouse with Rooftop Pool & BBQ
+            url: https://www.airbnb.com.mt/rooms/1216577173885909713
+            window-size: 1
+            max-occupancy-count: 4
+            has-terrace: true
+            has-pool: true
+            has-barbecue: false
+            open-for-bookings: true
+
+      2bedroom-medium-finish-medium-amenities-on-seafront-sliema:
+        title: 2 bedroom properties in Sliema with medium finish and amenities on the seafront
+        description: A group for 2 bedroom properties in Sliema featuring medium-quality finishes and amenities, located on the seafront.
+        is-internal-group: false
+        location: Sliema
+        bedroom-count: 2
+        finishes-level: MEDIUM
+        amenities-level: MEDIUM
+        view-level: PRIME_SEA_VIEW
+        proximity-to-seafront: ON_SEAFRONT
+        competitors:
+          arcobnb-seafront-sliema-apartment:
+            title: Top Location-2BR Seafront&Steps to Ferry byArcoBnb
+            url: https://www.airbnb.com.mt/rooms/1439823068945456608
+            window-size: 2
+            max-occupancy-count: 4
+            has-terrace: false
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+          bluefish-apartment:
+            title: Bluefish Seaviews – Luxury Stay
+            url: https://www.airbnb.com.mt/rooms/1496500934738257400
+            window-size: 2
+            max-occupancy-count: 4
+            has-terrace: true
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+          steps-from-all-apartment:
+            title: Seafront with views of Valletta, steps from all!
+            url: https://www.airbnb.com.mt/rooms/1439662821877276021
+            window-size: 2
+            max-occupancy-count: 6
+            has-terrace: false
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      2bedroom-very-high-finish-high-amenities-with-view-with-pool-close-to-seafront-sliema:
+        title: 2 bedroom properties in Sliema with very high amenities and finish level, terrace, pool, and view
+        description: A group for 2 bedroom properties in Sliema featuring very high finish and high amenities, including a terrace, pool, and views, located close to the seafront.
+        is-internal-group: false
+        location: Sliema
+        bedroom-count: 2
+        finishes-level: MEDIUM
+        amenities-level: MEDIUM
+        view-level: PRIME_SEA_VIEW
+        proximity-to-seafront: ON_SEAFRONT
+        competitors:
+          homega-tropical-apartment:
+            title: Designer Penthouse | Private Pool & Valletta Views
+            url: https://www.airbnb.com.mt/rooms/934677713926963612
+            window-size: 4
+            max-occupancy-count: 4
+            has-terrace: true
+            has-pool: true
+            has-barbecue: false
+            open-for-bookings: true
+          homega-tropical-apartment-v2:
+            title: Skyline Apartment | Private Pool & Valletta Views
+            url: https://www.airbnb.com.mt/rooms/939043642998556893
+            window-size: 4
+            max-occupancy-count: 4
+            has-terrace: true
+            has-pool: true
+            has-barbecue: false
+            open-for-bookings: true
+
+      2bedroom-very-high-finish-high-amenities-with-view-on-seafront-sliema:
+        title: 2 bedroom properties in Sliema with very high finish, high amenities, sea view, and seafront location
+        description: A group for 2 bedroom properties in Sliema featuring very high-quality finishes and high-level amenities, offering sea views and a prime seafront location.
+        is-internal-group: false
+        location: Sliema
+        bedroom-count: 2
+        finishes-level: VERY_HIGH
+        amenities-level: HIGH
+        view-level: PRIME_SEA_VIEW
+        proximity-to-seafront: ON_SEAFRONT
+        competitors:
+          homega-modern-apartment:
+            title: Modern Seafront Apartment | Sea Views & Balconies
+            url: https://www.airbnb.com.mt/rooms/960003521518269844
             window-size: 3
+            max-occupancy-count: 4
+            has-terrace: false
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      3bedroom-medium-finish-medium-amenities-with-view-on-seafront-sliema:
+        title: 3 bedroom properties in Sliema with medium finish, medium amenities, sea view, and seafront location
+        description: A group for 3 bedroom properties in Sliema featuring medium-quality finishes and amenities, offering sea views and a prime seafront location.
+        is-internal-group: false
+        location: Sliema
+        bedroom-count: 3
+        finishes-level: MEDIUM
+        amenities-level: MEDIUM
+        view-level: PRIME_SEA_VIEW
+        proximity-to-seafront: ON_SEAFRONT
+        competitors:
+          oneo-oneo-seaview-apt:
+            title: Seaview OneOneO Apartments - Nr. 4
+            url: https://www.airbnb.com.mt/rooms/21524281
+            window-size: 2
+            max-occupancy-count: 5
+            has-terrace: true
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      3bedroom-very-high-finish-high-amenities-with-view-with-terrace-on-seafront-sliema:
+        title: 3 bedroom properties in Sliema with very high amenities and finish level, terrace, sea view, and seafront location
+        description: A group for 3 bedroom properties in Sliema featuring very high finish and high amenities, with a terrace and sea views, situated directly on the seafront.
+        is-internal-group: false
+        location: Sliema
+        bedroom-count: 3
+        finishes-level: VERY_HIGH
+        amenities-level: HIGH
+        view-level: PRIME_SEA_VIEW
+        proximity-to-seafront: ON_SEAFRONT
+        competitors:
+          nevermind-golden-mile:
+            title: The Golden Mile Luxury Apartment in Sliema
+            url: https://www.airbnb.com.mt/rooms/1010607533490759160
+            window-size: 2
+            max-occupancy-count: 5
+            has-terrace: true
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      3bedroom-very-high-finish-high-amenities-with-side-view-very_close-to-seafront-sliema:
+        title: 3 bedroom properties in Sliema with very high amenities and high finish level, side sea view, and very close seafront location
+        description: A group for 3 bedroom properties in Sliema featuring very high finish and high amenities, with a side sea view and a location very close to the seafront.
+        is-internal-group: false
+        location: Sliema
+        bedroom-count: 3
+        finishes-level: VERY_HIGH
+        amenities-level: HIGH
+        view-level: SIDE_SEA_VIEW
+        proximity-to-seafront: VERY_CLOSE
+        competitors:
+          homega-family-apartment:
+            title: Family Apartment | Terrace & Calm Sea Views
+            url: https://www.airbnb.com.mt/rooms/1309583256631532695
+            window-size: 3
+            max-occupancy-count: 6
+            has-terrace: true
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      # ============= ST JULIANS =============
+
+      2bedroom-medium-finish-medium-amenities-no-view-st-julians:
+        title: 2 bedroom properties in St. Julians with medium finish, medium amenities. No view.
+        description: A group for 2 bedroom properties in St. Julians featuring medium-quality finishes and medium-level amenities.
+        is-internal-group: false
+        location: St Julians
+        bedroom-count: 2
+        finishes-level: MEDIUM
+        amenities-level: MEDIUM
+        view-level: NONE
+        proximity-to-seafront: NOT_CLOSE
+        competitors:
+          cloisters-stjulians-apt:
+            title: The Cloisters, with Garage, Balluta Bay St Julians
+            url: https://www.airbnb.com.mt/rooms/764485391010473321
+            window-size: 2
+            max-occupancy-count: 4
+            has-terrace: true
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      2bedroom-high-finish-medium-amenities-no-view-with-terrace-close-to-seafront-st-julians:
+        title: 2 bedroom properties in St. Julians with high finish, medium amenities, and terrace, near the seafront
+        description: A group for 2 bedroom properties in St. Julians featuring high-quality finishes and medium-level amenities, including a terrace, located close to the seafront.
+        is-internal-group: false
+        location: St Julians
+        bedroom-count: 2
+        finishes-level: HIGH
+        amenities-level: MEDIUM
+        view-level: NONE
+        proximity-to-seafront: CLOSE
+        competitors:
+          giuseppe-2bedroom-stjulians-apt:
+            title: Garden View 9 - 2 Bedroom Apt.
+            url: https://www.airbnb.com.mt/rooms/1048470926159422987
+            window-size: 2
+            max-occupancy-count: 4
+            has-terrace: true
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      2bedroom-high-finish-high-amenities-side-sea-view-with-terrace-st-julians:
+        title: 2 bedroom properties in St. Julians with high finish, high amenities, terrace, and side sea view
+        description: A group for 2 bedroom properties in St. Julians featuring high-quality finishes and high-level amenities, with a terrace and a side sea view.
+        is-internal-group: false
+        location: St Julians
+        bedroom-count: 2
+        finishes-level: HIGH
+        amenities-level: HIGH
+        view-level: SIDE_SEA_VIEW
+        proximity-to-seafront: NOT_CLOSE
+        competitors:
+          nevermind-designer-escape-stjulians:
+            title: Designer seaview escape in the heart of St Julians
+            url: https://www.airbnb.com.mt/rooms/855756261352234158
+            window-size: 2
+            max-occupancy-count: 4
+            has-terrace: true
+            has-pool: false
+            has-barbecue: false
             open-for-bookings: true

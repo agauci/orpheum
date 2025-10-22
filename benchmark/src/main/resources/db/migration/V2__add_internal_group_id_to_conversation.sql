@@ -1,0 +1,1 @@
+ALTER TABLE airgpt_conversation ADD COLUMN internal_group_id VARCHAR(200);

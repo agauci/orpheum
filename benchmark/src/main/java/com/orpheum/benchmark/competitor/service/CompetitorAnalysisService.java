@@ -13,11 +13,11 @@ import com.orpheum.benchmark.config.CompetitorConfig;
 import com.orpheum.benchmark.model.CalendarDay;
 import com.orpheum.benchmark.model.CalendarMonth;
 import com.orpheum.benchmark.model.PriceSpan;
-//import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.awaitility.Awaitility;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.awt.event.InputEvent;
+
+import static java.util.Collections.EMPTY_MAP;
+import static org.awaitility.Awaitility.await;
 
 /**
  * Service for analyzing competitor data from Airbnb.
@@ -72,8 +75,12 @@ public class CompetitorAnalysisService {
                 if (group.getCompetitors() != null && !group.getCompetitors().isEmpty()) {
                     group.getCompetitors().forEach((competitorKey, competitorConfig) -> {
                         Pair<CompetitorStatistics, Map<Month, CalendarMonth>> competitorData = extractCompetitorData(competitorConfig);
-                        groupPriceSpans.addAll(competitorData.getLeft().spans());
-                        competitorAnalysisData.add(new CompetitorData(competitorData.getLeft(), competitorData.getRight(), competitorConfig));
+                        
+                        if (competitorData.getLeft() != null) {
+                            groupPriceSpans.addAll(competitorData.getLeft().spans());    
+                        }
+                        
+                        competitorAnalysisData.add(new CompetitorData(competitorData != null ? competitorData.getLeft() : null, competitorData.getRight(), competitorConfig));
                     });
                 }
 
@@ -100,6 +107,8 @@ public class CompetitorAnalysisService {
 
                 log.debug("Completed processing of group {}", groupKey);
             }
+            groupPriceSpans.clear();
+            competitorAnalysisData.clear();
         });
     }
 
@@ -133,14 +142,24 @@ public class CompetitorAnalysisService {
         WebDriver driver = new ChromeDriver(options);
 
         try {
+            log.info("Extracting competitor data for {}", competitorConfig.getKey());
+
+            if (competitorConfig.getUrl() == null || competitorConfig.getUrl().isBlank()) {
+                return Pair.of(null, EMPTY_MAP);
+            }
+
             // Navigate to the URL (using the sample URL from the issue description)
             driver.get(competitorConfig.getUrl());
 
             // Wait for the page to load
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("button[aria-label='Close']")));
-            WebElement closeButton = driver.findElement(By.cssSelector("button[aria-label='Close']"));
-            closeButton.click();
+            try {
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("button[aria-label='Close']")));
+                WebElement closeButton = driver.findElement(By.cssSelector("button[aria-label='Close']"));
+                closeButton.click();
+            } catch (TimeoutException e) {
+                log.info("Unable to find close button within 10 seconds, skipping close button click");
+            }
 
             Thread.sleep(1000);
 
@@ -152,18 +171,23 @@ public class CompetitorAnalysisService {
 
             Map<Month, CalendarMonth> monthCalendarMonthMap = extractCalendarMonths(driver);
 
-            List<PriceSpan> priceSpans = generateAvailableSpans(monthCalendarMonthMap, 3);
+            List<PriceSpan> priceSpans;
+            if (competitorConfig.isOpenForBookings()) {
+                WebElement calendarElement = driver.findElement(By.cssSelector("div[data-testid='inline-availability-calendar']"));
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", calendarElement);
 
-            WebElement calendarElement = driver.findElement(By.cssSelector("div[data-testid='inline-availability-calendar']"));
-            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", calendarElement);
+                Set<Integer> calendarMonthsInteractions = new HashSet<>();
+                LocalDate now = LocalDate.now();
+                calendarMonthsInteractions.add(now.getMonth().getValue());
+                calendarMonthsInteractions.add(now.getMonth().plus(1).getValue());
 
-            Set<Integer> calendarMonthsInteractions = new HashSet<>();
-            LocalDate now = LocalDate.now();
-            calendarMonthsInteractions.add(now.getMonth().getValue());
-            calendarMonthsInteractions.add(now.getMonth().plus(1).getValue());
-            List<PriceSpan> decoratedPriceSpans = priceSpans.stream().map(span -> extractPriceForSpan(span, driver, calendarMonthsInteractions)).toList();
+                priceSpans = generateAvailableSpans(monthCalendarMonthMap, competitorConfig.getWindowSize(), driver, calendarMonthsInteractions, competitorConfig);
+            } else {
+                priceSpans = Collections.emptyList();
+                log.info("Competitor {} is not open for bookings, skipping price span extraction", competitorConfig.getKey());
+            }
 
-            return Pair.of(CompetitorStatisticsExtractor.compute(decoratedPriceSpans), monthCalendarMonthMap);
+            return Pair.of(CompetitorStatisticsExtractor.compute(priceSpans), monthCalendarMonthMap);
         } catch (Exception e) {
             log.error("Failed to extract competitor data", e);
             return null;
@@ -233,7 +257,7 @@ public class CompetitorAnalysisService {
         return result;
     }
 
-    private static List<PriceSpan> generateAvailableSpans(Map<Month, CalendarMonth> months, int windowSize) {
+    private List<PriceSpan> generateAvailableSpans(Map<Month, CalendarMonth> months, int windowSize, WebDriver driver, Set<Integer> calendarMonthsInteractions, CompetitorConfig competitorConfig) {
         List<PriceSpan> spans = new ArrayList<>();
         // A 3-night stay means that you are booking on the first day, and checking out on the last day, 3 nights later.
         // This results in booking 4 days.
@@ -246,66 +270,121 @@ public class CompetitorAnalysisService {
 
         // We’ll track available sequences
         for (int i = 0; i <= days.size() - trueWindowSize; i++) {
-            List<CalendarDay> window = days.subList(i, i + trueWindowSize);
+            boolean isProcessingComplete = false;
+            Integer appliedWindowSize = trueWindowSize;
 
-            boolean allAvailable = window.stream().allMatch(CalendarDay::available);
-            if (!allAvailable) continue;
+            while (!isProcessingComplete) {
+                if (i + appliedWindowSize > days.size()) break;
 
-            CalendarDay start = window.get(0);
-            CalendarDay end = window.get(trueWindowSize - 1);
+                List<CalendarDay> window = days.subList(i, i + appliedWindowSize);
 
-            boolean includesWeekend = window.stream()
-                    .anyMatch(d -> d.dayOfWeek() == DayOfWeek.SATURDAY || d.dayOfWeek() == DayOfWeek.SUNDAY);
+                boolean allAvailable = window.stream().allMatch(CalendarDay::available);
+                if (!allAvailable) break;
 
-            spans.add(new PriceSpan(
-                    start.month(),
-                    start.year(),
-                    start.dayOfMonth(),
-                    start.dayOfWeek(),
-                    end.month(),
-                    end.year(),
-                    end.dayOfMonth(),
-                    end.dayOfWeek(),
-                    includesWeekend,
-                    windowSize,
-                    null,
-                    null
-            ));
+                CalendarDay start = window.get(0);
+                CalendarDay end = window.get(appliedWindowSize - 1);
+
+                boolean includesWeekend = window.stream()
+                        .anyMatch(d -> d.dayOfWeek() == DayOfWeek.SATURDAY || d.dayOfWeek() == DayOfWeek.SUNDAY);
+
+                PriceExtractionResult priceExtractionResult = extractPriceForSpan(start, end, appliedWindowSize, driver, calendarMonthsInteractions, competitorConfig);
+
+                if (PriceExtractionOutcome.SUCCESS.equals(priceExtractionResult.outcome())) {
+                    spans.add(new PriceSpan(
+                            start.month(),
+                            start.year(),
+                            start.dayOfMonth(),
+                            start.dayOfWeek(),
+                            end.month(),
+                            end.year(),
+                            end.dayOfMonth(),
+                            end.dayOfWeek(),
+                            includesWeekend,
+                            windowSize,
+                            priceExtractionResult.price,
+                            priceExtractionResult.pricePerDay
+                    ));
+
+                    isProcessingComplete = true;
+                } else if (PriceExtractionOutcome.IMPOSSIBLE_SPAN.equals(priceExtractionResult.outcome())) {
+                    log.info("Encountered impossible span for property {}, starting on date {}, with window size {}. Skipping.", competitorConfig.getKey(), start, appliedWindowSize);
+                    isProcessingComplete = true;
+                } else if (PriceExtractionOutcome.BOOKING_WINDOW_TOO_SMALL.equals(priceExtractionResult.outcome())) {
+                    appliedWindowSize = priceExtractionResult.minimumWindowSize() + 1;
+                }
+            }
         }
 
         return spans;
     }
 
     @SneakyThrows
-    private PriceSpan extractPriceForSpan(PriceSpan span, WebDriver driver, Set<Integer> calendarMonthsInteractions) {
-        WebElement startCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + span.startCalendarMonth() + "/" + padDay(span.startDay()) + "/" + span.startCalendarYear() + "']"));
+    private PriceExtractionResult extractPriceForSpan(CalendarDay start, CalendarDay end, Integer windowSize, WebDriver driver, Set<Integer> calendarMonthsInteractions, CompetitorConfig competitorConfig) {
+        log.info("Extracting price for span {}/{}/{}-{}/{}/{}, with window size {}", start.dayOfMonth(), start.month(), start.year(), end.dayOfMonth(), end.month(), end.year(), windowSize);
+
+        WebElement startCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + start.month() + "/" + padDay(start.dayOfMonth()) + "/" + start.year() + "']"));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", startCalendarElement);
 
-        if ((!calendarMonthsInteractions.contains(span.startCalendarMonth()) || !calendarMonthsInteractions.contains(span.endCalendarMonth())) && calendarMonthsInteractions.size() != 1) {
+        if ((!calendarMonthsInteractions.contains(start.month()) || !calendarMonthsInteractions.contains(end.month())) && calendarMonthsInteractions.size() != 1) {
             WebElement nextMonthButton = driver.findElement(By.cssSelector("button[aria-label='Move forward to switch to the next month.']"));
             nextMonthButton.click();
 
             Thread.sleep(1000);
         }
-        calendarMonthsInteractions.add(span.endCalendarMonth());
+        calendarMonthsInteractions.add(end.month());
 
-        WebElement endCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + span.endCalendarMonth() + "/" + padDay(span.endDay()) + "/" + span.endCalendarYear() + "']"));
+        if (windowSize > 2) {
+            // Ensure the availability text confirms the correctness of the span. If not, extract the minimum span size.
+            final WebElement availabilityCalendar = driver.findElement(By.cssSelector("div[data-testid='availability-calendar-date-range']"));
+            // If the current window size is smaller than the minimum window size, then moving the calendar by one day during the next loop will not generate the
+            // Minimum Stay: text, since it is still valid.
+            await()
+                    .atMost(Duration.ofSeconds(10))
+                    .pollInterval(Duration.ofMillis(500))
+                    .until(() -> availabilityCalendar.getText().contains("Minimum stay") ||
+                                    availabilityCalendar.getText().contains(start.year().toString()) ||
+                                        availabilityCalendar.getText().contains("The closest available"));
+            Integer requiredWindowSize = extractMinimumWindowSize(availabilityCalendar.getText());
+            if (requiredWindowSize >= windowSize) {
+                log.info("Extending window size to {} for property {}, starting on date {}", requiredWindowSize + 1, competitorConfig.getKey(), start);
+                return new PriceExtractionResult(PriceExtractionOutcome.BOOKING_WINDOW_TOO_SMALL, null, null, requiredWindowSize);
+            } else if (availabilityCalendar.getText().contains("The closest available")) {
+                return new PriceExtractionResult(PriceExtractionOutcome.IMPOSSIBLE_SPAN, null, null, requiredWindowSize);
+            }
+        }
+
+        WebElement endCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + end.month() + "/" + padDay(end.dayOfMonth()) + "/" + end.year() + "']"));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", endCalendarElement);
 
-        BigDecimal spanPrice = safelyExtractAmount(driver, 0);
+        BigDecimal spanPrice = safelyExtractAmount(driver, windowSize, 0);
+        log.info("Extracted price {} for span {}/{}/{}-{}/{}/{}, with window size {}", spanPrice, start.dayOfMonth(), start.month(), start.year(), end.dayOfMonth(), end.month(), end.year(), windowSize);
 
-        return span.toBuilder()
-                .price(spanPrice)
-                .pricePerDay(spanPrice.divide(BigDecimal.valueOf(span.length()), 2, BigDecimal.ROUND_HALF_UP))
-                .build();
+        return new PriceExtractionResult(PriceExtractionOutcome.SUCCESS, spanPrice, spanPrice.divide(BigDecimal.valueOf(windowSize - 1), 2, BigDecimal.ROUND_HALF_UP), null);
     }
 
     private String padDay(Integer day) {
         return (day <= 9) ? "0" + day : day.toString();
     }
 
-    private BigDecimal safelyExtractAmount(WebDriver driver, Integer failureCount) {
+    private Integer extractMinimumWindowSize(String text) {
+        if (text == null || text.isBlank() || !text.contains("Minimum stay:")) {
+            return -1;
+        }
+
+        return Integer.valueOf(text.replace("Minimum stay:", "")
+                .replace("nights", "")
+                .replace("night", "")
+                .trim());
+    }
+
+    private BigDecimal safelyExtractAmount(WebDriver driver, Integer windowSize, Integer failureCount) throws StaleElementReferenceException {
         try {
+            // Ensure that the amount being extracted is for the correct time span size
+            new WebDriverWait(driver, Duration.ofSeconds(30))
+                    .until(ExpectedConditions.presenceOfElementLocated(
+                            By.xpath("//div[@data-testid='book-it-default']//*[contains(text(), 'for " + (windowSize - 1) + " night')]")
+                    ));
+
             WebElement price = new WebDriverWait(driver, Duration.ofSeconds(30))
                     .until(ExpectedConditions.presenceOfElementLocated(
                             By.cssSelector("[data-testid='book-it-default'] button[role='button'] > span:first-child")
@@ -317,7 +396,7 @@ public class CompetitorAnalysisService {
         } catch (StaleElementReferenceException e) {
             log.warn("Failed to extract price after {} attempts", failureCount);
             if (failureCount < 3) {
-                return safelyExtractAmount(driver, failureCount + 1);
+                return safelyExtractAmount(driver, windowSize, failureCount + 1);
             } else {
                 throw e;
             }
@@ -356,5 +435,13 @@ public class CompetitorAnalysisService {
     }
 
     private record CompetitorData(CompetitorStatistics competitorStatistics, Map<Month, CalendarMonth> calendarMonths, CompetitorConfig competitorConfig) { }
+
+    private record PriceExtractionResult(PriceExtractionOutcome outcome, BigDecimal price, BigDecimal pricePerDay, Integer minimumWindowSize) { }
+
+    private enum PriceExtractionOutcome {
+        SUCCESS,
+        BOOKING_WINDOW_TOO_SMALL,
+        IMPOSSIBLE_SPAN
+    }
 
 }

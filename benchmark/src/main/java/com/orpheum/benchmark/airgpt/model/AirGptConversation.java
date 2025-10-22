@@ -21,14 +21,15 @@ public class AirGptConversation extends AbstractEntity<UUID, AirGptConversation>
     @Id
     UUID id;
     String title;
+    String internalGroupId;
 
     // @CreatedDate and @LastModifiedDate do not support OffsetDateTime
     @CreatedDate
     LocalDateTime timestampCreated;
 
     @PersistenceCreator
-    public static AirGptConversation create(UUID id, String title) {
-        return new AirGptConversation(id, title, null);
+    public static AirGptConversation create(UUID id, String title, String internalGroupId) {
+        return new AirGptConversation(id, title, internalGroupId, null);
     }
 
 }

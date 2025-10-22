@@ -19,11 +19,9 @@ public class CompetitorGroup {
     private String description;
     private String location;
     private Integer bedroomCount;
-    private Integer maxOccupancyCount;
     private FinishesLevel finishesLevel;
     private AmenitiesLevel amenitiesLevel;
     private ViewLevel viewLevel;
     private ProximityToSeafront proximityToSeafront;
-    private boolean hasTerrace;
     private Map<String, CompetitorConfig> competitors;
 }
