@@ -58,7 +58,7 @@ public class CompetitorAnalysisService {
     CompetitorGroupReportRepository competitorGroupReportRepository;
     CompetitorReportRepository competitorReportRepository;
 
-    @Scheduled(fixedRateString = "5",
+    @Scheduled(fixedRateString = "1",
                 initialDelayString = "0",
                 timeUnit = TimeUnit.MINUTES)
     public void processReports() {
@@ -68,7 +68,7 @@ public class CompetitorAnalysisService {
         benchmarkProperties.getCompetitorGroups().forEach((groupKey, group) -> {
             Optional<CompetitorGroupReport> latestCompetitorGroupReport = competitorGroupReportRepository.findFirstByGroupIdOrderByIdDesc(groupKey);
             if (latestCompetitorGroupReport.isPresent() && Duration.between(latestCompetitorGroupReport.get().getTimestampGenerated(), LocalDateTime.now()).toMinutes() < 1440) {
-                log.debug("Skipping group {} as it has been last processed at {}", groupKey, latestCompetitorGroupReport.get().getTimestampGenerated());
+                log.trace("Skipping group {} as it has been last processed at {}", groupKey, latestCompetitorGroupReport.get().getTimestampGenerated());
             } else {
                 log.debug("Starting processing of group {}", groupKey);
 

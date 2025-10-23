@@ -60,6 +60,7 @@ orpheum:
             open-for-bookings: false
             minimum-rate: 110
             cleaning-fee: 60
+            launched-on: "2025-10-27"
 
       # ============= GZIRA =============
 

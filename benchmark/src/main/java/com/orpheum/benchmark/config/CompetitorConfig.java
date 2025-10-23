@@ -19,4 +19,5 @@ public class CompetitorConfig {
 
     private Double minimumRate;
     private Double cleaningFee;
+    private String launchedOn;
 }
