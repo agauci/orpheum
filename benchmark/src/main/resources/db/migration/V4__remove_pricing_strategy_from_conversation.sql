@@ -1,0 +1,1 @@
+ALTER TABLE airgpt_conversation DROP COLUMN pricing_strategy;

@@ -1,5 +1,8 @@
 package com.orpheum.benchmark.model;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public enum PricingStrategyMode {
 
     CONSERVATIVE("A strategy which prioritises occupancy, even at the cost of suppressed rates"),
@@ -12,8 +15,10 @@ public enum PricingStrategyMode {
         this.description = description;
     }
 
-    public String getFullDescription() {
-        return this.name() + " - " + this.description;
+    public static String getFullDescription() {
+        return Stream.of(PricingStrategyMode.values())
+                .map(mode -> mode.name() + " - " + mode.description)
+                .collect(Collectors.joining("\n"));
     }
 
 }

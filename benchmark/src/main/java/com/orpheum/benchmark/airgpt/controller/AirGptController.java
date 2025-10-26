@@ -2,7 +2,6 @@ package com.orpheum.benchmark.airgpt.controller;
 
 import com.orpheum.benchmark.airgpt.mapper.AirGptConversationContinueResponseMapper;
 import com.orpheum.benchmark.airgpt.mapper.AirGptConversationStartResponseMapper;
-import com.orpheum.benchmark.airgpt.mapper.PricingStrategyMapper;
 import com.orpheum.benchmark.airgpt.service.AirGptService;
 import com.orpheum.benchmark.api.AirGptApi;
 import com.orpheum.benchmark.model.AirGptConversationContinueResponse;
@@ -22,11 +21,10 @@ public class AirGptController implements AirGptApi {
     private final AirGptService service;
     private final AirGptConversationStartResponseMapper startResponseMapper;
     private final AirGptConversationContinueResponseMapper continueResponseMapper;
-    private final PricingStrategyMapper pricingStrategyMapper;
 
     @Override
     public ResponseEntity<AirGptConversationStartResponse> startAirGptConversation(StartAirGptConversationRequest request) {
-        return ResponseEntity.ok(startResponseMapper.map(service.startConversation(request.getPrompt(), request.getInternalGroupId(), pricingStrategyMapper.map(request.getPricingStrategy()))));
+        return ResponseEntity.ok(startResponseMapper.map(service.startConversation(request.getPrompt(), request.getInternalGroupId())));
     }
 
     @Override

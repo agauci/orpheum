@@ -26,7 +26,6 @@ paths:
               required:
                 - internalGroupId
                 - prompt
-                - pricingStrategy
               properties:
                 internalGroupId:
                   type: string
@@ -36,14 +35,6 @@ paths:
                   type: string
                   description: The initial user prompt to start the conversation
                   example: "Deliver on your mission to provide a pricing strategy for the internal group whose ID is provided, based on the information, rules and insights made available to you"
-                pricingStrategy:
-                  type: string
-                  enum:
-                    - CONSERVATIVE
-                    - BALANCED
-                    - AGGRESSIVE
-                  description: The strategy to be adopted when generating the pricing model
-                  example: "BALANCED"
       responses:
         '200':
           description: Conversation started successfully
