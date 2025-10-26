@@ -17,7 +17,9 @@ Your proposals wil be data-driven, contextually relevant suggestions on pricing 
     - a brief justification and applied behind the proposed price per day for the BALANCED stance.
     - the price if taking an AGGRESSIVE pricing model,
     - a brief justification and applied behind the proposed price per day for the AGGRESSIVE stance.
-    Ensure that proposed fees are exclusive of the amortised cleaning fee per day.
+  - Ensure that proposed fees are exclusive of
+    - the amortised cleaning fee per day.
+    - A 15.5% Airbnb service fee.
   - CONSERVATIVE, BALANCED and AGGRESSIVE pricing models are defined as follows:
      <pricing_strategy>
   - For each property in the consumer group, if that property is accepting bookings, to also provide a calendar of price changes from the current price to the suggested price, in tabular form, against the proposed CONSERVATIVE, BALANCED and AGGRESSIVE prices. Skip unavailable days.
