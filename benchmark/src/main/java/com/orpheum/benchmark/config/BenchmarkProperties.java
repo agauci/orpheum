@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * Configuration properties for the benchmark application.
- * Maps to the "orpheum.benchmark" prefix in application.yaml.
+ * Maps to the "orpheum.benchmark" prefix in application.yml.
  */
 @Data
 @Configuration

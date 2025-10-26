@@ -19,7 +19,7 @@ spring:
       client:
         enabled: false
     openai:
-      api-key: ${OPENAI_API_KEY:}
+      api-key: ${OPENAI_API_KEY}
 logging:
   level:
     root: INFO                  # Root logger level
@@ -30,7 +30,6 @@ logging:
     #org.springframework.ai.openai: DEBUG
     #org.springframework.jdbc.core: DEBUG
     #org.springframework.data.jdbc.repository.query: DEBUG
-
 
 orpheum:
   benchmark:
