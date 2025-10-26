@@ -9,6 +9,7 @@ import com.orpheum.benchmark.airgpt.repository.AirGptConversationPromptRepositor
 import com.orpheum.benchmark.airgpt.repository.AirGptConversationRepository;
 import com.orpheum.benchmark.airgpt.service.tools.AirGptTools;
 import com.orpheum.benchmark.competitor.support.UUIDs;
+import com.orpheum.benchmark.model.PricingStrategyMode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -44,10 +45,10 @@ public class AirGptService {
     private Resource airGptPrompt;
 
     @Transactional
-    public AirGptConversationOutcome startConversation(String userPrompt, String internalGroupId) {
+    public AirGptConversationOutcome startConversation(String userPrompt, String internalGroupId, PricingStrategyMode pricingStrategyMode) {
         UUID conversationId = UUIDs.create();
 
-        return processPrompt(conversationId, userPrompt, internalGroupId, true);
+        return processPrompt(conversationId, userPrompt, internalGroupId, pricingStrategyMode, true);
     }
 
     @Transactional
@@ -57,13 +58,13 @@ public class AirGptService {
             throw new RuntimeException("Unable to find conversation with provided ID " + conversationId);
         }
 
-        return processPrompt(conversationId, userPrompt, conversation.get().getInternalGroupId(), false);
+        return processPrompt(conversationId, userPrompt, conversation.get().getInternalGroupId(), conversation.get().getPricingStrategy(), false);
     }
 
-    private AirGptConversationOutcome processPrompt(UUID conversationId, String userPrompt, String internalGroupId, boolean isNewConversation) {
+    private AirGptConversationOutcome processPrompt(UUID conversationId, String userPrompt, String internalGroupId, PricingStrategyMode pricingStrategyMode, boolean isNewConversation) {
         //verifyPromptLimits(subscriptionLevel, userId);
 
-        final String text = generateAirGptPromptText(isNewConversation, internalGroupId, conversationId);
+        final String text = generateAirGptPromptText(isNewConversation, internalGroupId, conversationId, pricingStrategyMode);
         final OpenAiChatOptions chatOptions = buildChatOptions();
         final Long startTime = System.currentTimeMillis();
 
@@ -83,7 +84,7 @@ public class AirGptService {
                 .entity(AirGptLlmOutcome.class);
 
         if (isNewConversation) {
-            conversationRepository.save(AirGptConversation.create(conversationId, extractionOutcome.conversationTitle(), internalGroupId).markAsNew());
+            conversationRepository.save(AirGptConversation.create(conversationId, extractionOutcome.conversationTitle(), internalGroupId, pricingStrategyMode).markAsNew());
         }
 
         decoratePromptWithLlmOutcome(conversationId, extractionOutcome, System.currentTimeMillis() - startTime, chatOptions);
@@ -91,7 +92,7 @@ public class AirGptService {
         return new AirGptConversationOutcome(conversationId, extractionOutcome);
     }
 
-    private String generateAirGptPromptText(boolean isNewConversation, String internalGroupId, UUID conversationId) {
+    private String generateAirGptPromptText(boolean isNewConversation, String internalGroupId, UUID conversationId, PricingStrategyMode pricingStrategy) {
         return PromptTemplate.builder()
                 .renderer(StTemplateRenderer.builder().startDelimiterToken('<').endDelimiterToken('>').build())
                 .resource(airGptPrompt)
@@ -99,7 +100,8 @@ public class AirGptService {
                 .render(Map.of(
                         "is_new_conversation", (isNewConversation) ? "yes" : "no",
                         "conversation_id", conversationId.toString(),
-                        "internal_group_id", internalGroupId
+                        "internal_group_id", internalGroupId,
+                        "pricing_strategy", pricingStrategy.getFullDescription()
                 ));
     }
 

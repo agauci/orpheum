@@ -1,0 +1,1 @@
+ALTER TABLE airgpt_conversation ADD COLUMN pricing_strategy VARCHAR(200);
