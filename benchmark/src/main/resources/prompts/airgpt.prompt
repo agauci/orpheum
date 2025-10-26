@@ -20,6 +20,7 @@ Your proposals wil be data-driven, contextually relevant suggestions on pricing 
     - the price if taking an AGGRESSIVE pricing model,
     - the net price if taking an AGGRESSIVE pricing model, deducting the 15.5% Airbnb service fee,
     - a brief justification and applied behind the proposed price per day for the AGGRESSIVE stance.
+    - A column with AirGPT's recommendation on which model to go for on this day, based on all other factors described in this prompt.
   - Ensure that proposed fees are exclusive of the amortised cleaning fee per day.
   - CONSERVATIVE, BALANCED and AGGRESSIVE pricing models are defined as follows:
      <pricing_strategy>
