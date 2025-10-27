@@ -30,7 +30,7 @@ paths:
                 internalGroupId:
                   type: string
                   description: The internal competitor group ID being targeted
-                  example: "bedroom-very-high-finish-medium-amenities-side-sea-view-gzira"
+                  example: "1bedroom-very-high-finish-very-high-amenities-side-sea-view-gzira"
                 prompt:
                   type: string
                   description: The initial user prompt to start the conversation

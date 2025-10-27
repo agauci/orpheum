@@ -37,7 +37,7 @@ orpheum:
 
       # ============= INTERNAL =============
 
-      1bedroom-very-high-finish-medium-amenities-side-sea-view-gzira:
+      1bedroom-very-high-finish-very-high-amenities-side-sea-view-gzira:
         title: 1 bedroom properties in Gzira with very high amenities and finish level and side sea views (internal)
         description: An internal group for 1 bedroom properties in Gzira with very high amenities and finish level and side sea views
         is-internal-group: true
@@ -50,13 +50,13 @@ orpheum:
         competitors:
           residenza-teatru:
             title: Designer Penthouse by the Promenade | BBQ Terrace
-            url:  # https://airbnb.com.mt/h/oprheumteatru
+            url:  https://airbnb.com.mt/h/oprheumteatru
             window-size: 2
             max-occupancy-count: 4
             has-terrace: true
             has-pool: false
             has-barbecue: true
-            open-for-bookings: false
+            open-for-bookings: true
             minimum-rate: 110
             cleaning-fee: 60
             launched-on: "2025-10-27"
