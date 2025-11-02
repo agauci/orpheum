@@ -57,7 +57,7 @@ orpheum:
             has-pool: false
             has-barbecue: true
             open-for-bookings: true
-            minimum-rate: 110
+            minimum-rate: 90
             cleaning-fee: 60
             launched-on: "2025-10-27"
 
