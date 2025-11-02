@@ -17,7 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.awaitility.Awaitility;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -322,7 +321,7 @@ public class CompetitorAnalysisService {
     private PriceExtractionResult extractPriceForSpan(CalendarDay start, CalendarDay end, Integer windowSize, WebDriver driver, Set<Integer> calendarMonthsInteractions, CompetitorConfig competitorConfig) {
         log.info("Extracting price for span {}/{}/{}-{}/{}/{}, with window size {}", start.dayOfMonth(), start.month(), start.year(), end.dayOfMonth(), end.month(), end.year(), windowSize);
 
-        WebElement startCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + start.month() + "/" + padDay(start.dayOfMonth()) + "/" + start.year() + "']"));
+        WebElement startCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + padNumber(start.month()) + "/" + padNumber(start.dayOfMonth()) + "/" + start.year() + "']"));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", startCalendarElement);
 
         if ((!calendarMonthsInteractions.contains(start.month()) || !calendarMonthsInteractions.contains(end.month())) && calendarMonthsInteractions.size() != 1) {
@@ -353,7 +352,7 @@ public class CompetitorAnalysisService {
             }
         }
 
-        WebElement endCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + end.month() + "/" + padDay(end.dayOfMonth()) + "/" + end.year() + "']"));
+        WebElement endCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + padNumber(end.month()) + "/" + padNumber(end.dayOfMonth()) + "/" + end.year() + "']"));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", endCalendarElement);
 
         BigDecimal spanPrice = safelyExtractAmount(driver, windowSize, 0);
@@ -362,8 +361,8 @@ public class CompetitorAnalysisService {
         return new PriceExtractionResult(PriceExtractionOutcome.SUCCESS, spanPrice, spanPrice.divide(BigDecimal.valueOf(windowSize - 1), 2, BigDecimal.ROUND_HALF_UP), null);
     }
 
-    private String padDay(Integer day) {
-        return (day <= 9) ? "0" + day : day.toString();
+    private String padNumber(Integer num) {
+        return (num <= 9) ? "0" + num : num.toString();
     }
 
     private Integer extractMinimumWindowSize(String text) {

@@ -59,8 +59,8 @@ Installation:
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
     ssl_session_timeout 1d;
     ssl_session_cache shared:SSL_2:10m;
-    ssl_stapling on;
-    ssl_stapling_verify on;
+    ssl_stapling off;
+    ssl_stapling_verify off;
 
     location / {
         proxy_pass http://127.0.0.1:7070;
@@ -89,7 +89,7 @@ To view logs from set up service:
 - Add the {{local_agent_url}} to the let's encrypt command (see backstage/src/main/resources/Dockerfile)
 - Set up the Orpheum Unifi Agent as described above.
 - Add the new site configuration on Backstage's side at backstage/src/main/resources/application.yaml
-T
+
 ## TO DO
 - If we migrate from the current docker compose based solution, we'll need to install a systemctl based solution for backstage similar to the agent. Currently, restarts are handled by docker compose.
 - To Limit traffic from general public? 

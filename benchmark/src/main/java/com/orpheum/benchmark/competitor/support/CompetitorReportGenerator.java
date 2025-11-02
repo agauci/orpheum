@@ -40,7 +40,7 @@ public class CompetitorReportGenerator {
         md.append("| Average Including Weekend | ").append(format(stats.averagePriceIncludingWeekendDaysNext7Days())).append(" |\n");
         md.append("| Std Dev | ").append(format(stats.stdDevPriceNext7Days())).append(" |\n");
         md.append("| Median Price | ").append(format(stats.medianPriceNext7Days())).append(" |\n");
-        md.append("| Weekend Premium (%) | ").append(format(stats.weekendPremiumRatioNext7Days())).append(" |\n\n");
+        md.append("| Weekend Premium (%) | ").append(formatPercentage(stats.weekendPremiumRatioNext7Days())).append(" |\n\n");
 
         // ===== SHORT TERM (7-14 days) =====
         md.append("### Short Term (Next 7-14 Days)\n");
@@ -95,7 +95,7 @@ public class CompetitorReportGenerator {
             md.append("| Average Including Weekend | ").append(format(stats.averagePriceIncludingWeekendDaysNext7Days())).append(" |\n");
             md.append("| Std Dev | ").append(format(stats.stdDevPriceNext7Days())).append(" |\n");
             md.append("| Median Price | ").append(format(stats.medianPriceNext7Days())).append(" |\n");
-            md.append("| Weekend Premium (%) | ").append(format(stats.weekendPremiumRatioNext7Days())).append(" |\n\n");
+            md.append("| Weekend Premium (%) | ").append(formatPercentage(stats.weekendPremiumRatioNext7Days())).append(" |\n\n");
 
             // ===== SHORT TERM (7-14 days) =====
             md.append("### Short Term (Next 7-14 Days)\n");
@@ -104,7 +104,7 @@ public class CompetitorReportGenerator {
             md.append("| Average Price | ").append(format(stats.averagePrice7To14Days())).append(" |\n");
             md.append("| Average Non-Weekend Price | ").append(format(stats.averageNonWeekendPriceNext7To14Days())).append(" |\n");
             md.append("| Average Including Weekend | ").append(format(stats.averagePriceIncludingWeekendDaysNext7To14Days())).append(" |\n");
-            md.append("| Percentage Change vs First 7 Days (%) | ").append(format(stats.percentageChangeOverFirstAndSecond7Days())).append(" |\n\n");
+            md.append("| Percentage Change vs First 7 Days (%) | ").append(formatPercentage(stats.percentageChangeOverFirstAndSecond7Days())).append(" |\n\n");
 
             // ===== MONTHLY PROJECTIONS =====
             md.append("### Monthly Projections\n");
@@ -192,6 +192,11 @@ public class CompetitorReportGenerator {
     private static String format(BigDecimal value) {
         if (value == null || BigDecimal.ZERO.compareTo(value) == 0) return "N/A";
         return "€" + value.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+    }
+
+    private static String formatPercentage(BigDecimal value) {
+        if (value == null || BigDecimal.ZERO.compareTo(value) == 0) return "N/A";
+        return value.setScale(2, BigDecimal.ROUND_HALF_UP).toString() + "%";
     }
 
     private static LocalDate toLocalDate(PriceSpan ps) {

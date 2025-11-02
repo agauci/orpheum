@@ -100,7 +100,9 @@ public class AirGptService {
                         "conversation_id", conversationId.toString(),
                         "internal_group_id", internalGroupId,
                         "pricing_strategy", PricingStrategyMode.getFullDescription()
-                ));
+                ))
+                // Remove any comments from the prompt
+                .replaceAll("//[^\\r\\n]*(\\r?\\n)?", "");
     }
 
     private OpenAiChatOptions buildChatOptions() {
