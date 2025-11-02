@@ -321,9 +321,6 @@ public class CompetitorAnalysisService {
     private PriceExtractionResult extractPriceForSpan(CalendarDay start, CalendarDay end, Integer windowSize, WebDriver driver, Set<Integer> calendarMonthsInteractions, CompetitorConfig competitorConfig) {
         log.info("Extracting price for span {}/{}/{}-{}/{}/{}, with window size {}", start.dayOfMonth(), start.month(), start.year(), end.dayOfMonth(), end.month(), end.year(), windowSize);
 
-        WebElement startCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + padNumber(start.month()) + "/" + padNumber(start.dayOfMonth()) + "/" + start.year() + "']"));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", startCalendarElement);
-
         if ((!calendarMonthsInteractions.contains(start.month()) || !calendarMonthsInteractions.contains(end.month())) && calendarMonthsInteractions.size() != 1) {
             WebElement nextMonthButton = driver.findElement(By.cssSelector("button[aria-label='Move forward to switch to the next month.']"));
             nextMonthButton.click();
@@ -331,6 +328,9 @@ public class CompetitorAnalysisService {
             Thread.sleep(1000);
         }
         calendarMonthsInteractions.add(end.month());
+
+        WebElement startCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + padNumber(start.month()) + "/" + padNumber(start.dayOfMonth()) + "/" + start.year() + "']"));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", startCalendarElement);
 
         if (windowSize > 2) {
             // Ensure the availability text confirms the correctness of the span. If not, extract the minimum span size.
