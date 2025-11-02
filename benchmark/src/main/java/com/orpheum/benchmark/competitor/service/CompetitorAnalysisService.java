@@ -1,5 +1,6 @@
 package com.orpheum.benchmark.competitor.service;
 
+import com.google.common.base.Strings;
 import com.orpheum.benchmark.competitor.model.AggregateCompetitorGroupReport;
 import com.orpheum.benchmark.competitor.model.CompetitorGroupReport;
 import com.orpheum.benchmark.competitor.model.CompetitorReport;
@@ -10,6 +11,7 @@ import com.orpheum.benchmark.competitor.model.CompetitorStatistics;
 import com.orpheum.benchmark.competitor.support.CompetitorStatisticsExtractor;
 import com.orpheum.benchmark.config.BenchmarkProperties;
 import com.orpheum.benchmark.config.CompetitorConfig;
+import com.orpheum.benchmark.config.CompetitorGroup;
 import com.orpheum.benchmark.model.CalendarDay;
 import com.orpheum.benchmark.model.CalendarMonth;
 import com.orpheum.benchmark.model.PriceSpan;
@@ -64,7 +66,16 @@ public class CompetitorAnalysisService {
         List<PriceSpan> groupPriceSpans = new ArrayList<>();
         List<CompetitorData> competitorAnalysisData = new ArrayList<>();
 
-        benchmarkProperties.getCompetitorGroups().forEach((groupKey, group) -> {
+        Map<String, CompetitorGroup> finalCompetitorGroups;
+        if (!Strings.isNullOrEmpty(benchmarkProperties.getRunOnly())) {
+            log.info("Running only competitor group {}", benchmarkProperties.getRunOnly());
+            finalCompetitorGroups = Map.of(benchmarkProperties.getRunOnly(), benchmarkProperties.getCompetitorGroups().get(benchmarkProperties.getRunOnly()));
+        } else {
+            finalCompetitorGroups = benchmarkProperties.getCompetitorGroups();
+            log.info("Running for all competitor groups");
+        }
+
+        finalCompetitorGroups.forEach((groupKey, group) -> {
             Optional<CompetitorGroupReport> latestCompetitorGroupReport = competitorGroupReportRepository.findFirstByGroupIdOrderByIdDesc(groupKey);
             if (latestCompetitorGroupReport.isPresent() && Duration.between(latestCompetitorGroupReport.get().getTimestampGenerated(), LocalDateTime.now()).toMinutes() < 1440) {
                 log.trace("Skipping group {} as it has been last processed at {}", groupKey, latestCompetitorGroupReport.get().getTimestampGenerated());
@@ -331,6 +342,9 @@ public class CompetitorAnalysisService {
 
         WebElement startCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + padNumber(start.month()) + "/" + padNumber(start.dayOfMonth()) + "/" + start.year() + "']"));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", startCalendarElement);
+        if (!isCheckinAllowed(driver, start)) {
+            return new PriceExtractionResult(PriceExtractionOutcome.IMPOSSIBLE_SPAN, null, null, windowSize);
+        }
 
         if (windowSize > 2) {
             // Ensure the availability text confirms the correctness of the span. If not, extract the minimum span size.
@@ -400,6 +414,28 @@ public class CompetitorAnalysisService {
                 throw e;
             }
         }
+    }
+
+    private boolean isCheckinAllowed(WebDriver driver, CalendarDay start) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        wait.until(d -> {
+            WebElement startCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + padNumber(start.month()) + "/" + padNumber(start.dayOfMonth()) + "/" + start.year() + "']"));
+            WebElement parent = startCalendarElement.findElement(By.xpath(".."));
+
+            String ariaLabel = parent.getDomAttribute("aria-label");
+            return ariaLabel != null && ariaLabel.contains(start.year().toString());
+        });
+
+        WebElement startCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + padNumber(start.month()) + "/" + padNumber(start.dayOfMonth()) + "/" + start.year() + "']"));
+        WebElement parent = startCalendarElement.findElement(By.xpath(".."));
+        String parentAriaLabel = parent.getDomAttribute("aria-label");
+
+        if (parentAriaLabel != null && parentAriaLabel.toLowerCase().contains("this day is only available for checkout")) {
+            return false;
+        }
+
+        return true;
     }
 
     private void clickWithRobot(Integer xLocation, Integer yLocation) throws AWTException, InterruptedException {
