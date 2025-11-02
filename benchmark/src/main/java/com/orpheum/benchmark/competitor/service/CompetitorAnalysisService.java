@@ -72,7 +72,6 @@ public class CompetitorAnalysisService {
             finalCompetitorGroups = Map.of(benchmarkProperties.getRunOnly(), benchmarkProperties.getCompetitorGroups().get(benchmarkProperties.getRunOnly()));
         } else {
             finalCompetitorGroups = benchmarkProperties.getCompetitorGroups();
-            log.info("Running for all competitor groups");
         }
 
         finalCompetitorGroups.forEach((groupKey, group) -> {
