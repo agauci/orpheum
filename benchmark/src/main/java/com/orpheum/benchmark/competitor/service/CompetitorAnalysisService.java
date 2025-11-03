@@ -430,7 +430,8 @@ public class CompetitorAnalysisService {
         WebElement parent = startCalendarElement.findElement(By.xpath(".."));
         String parentAriaLabel = parent.getDomAttribute("aria-label");
 
-        if (parentAriaLabel != null && parentAriaLabel.toLowerCase().contains("this day is only available for checkout")) {
+        if (parentAriaLabel != null &&
+                (parentAriaLabel.toLowerCase().contains("this day is only available for checkout") || parentAriaLabel.toLowerCase().contains("no eligible checkout date"))) {
             return false;
         }
 
