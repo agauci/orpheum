@@ -2,6 +2,8 @@ package com.orpheum.benchmark.config;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * Configuration class representing a competitor with key, title, and URL.
  */
@@ -20,4 +22,5 @@ public class CompetitorConfig {
     private Double minimumRate;
     private Double cleaningFee;
     private String launchedOn;
+    private List<String> appliedDiscounts;
 }

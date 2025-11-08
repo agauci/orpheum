@@ -81,7 +81,14 @@ public class CompetitorReportGenerator {
         }
         if (config.getCleaningFee() != null) {
             md.append("Cleaning fee: ").append(config.getCleaningFee()).append("\n");
-            md.append("Average cleaning fee per day: ").append(BigDecimal.valueOf(config.getCleaningFee()).divide(BigDecimal.valueOf(config.getWindowSize()), 2, RoundingMode.HALF_UP)).append("\n");
+            md.append("Amortized cleaning fee per day: ").append(BigDecimal.valueOf(config.getCleaningFee()).divide(BigDecimal.valueOf(config.getWindowSize()), 2, RoundingMode.HALF_UP)).append("\n");
+        }
+        if (config.getLaunchedOn() != null) {
+            md.append("Launched on: ").append(config.getLaunchedOn()).append("\n");
+        }
+        if (config.getAppliedDiscounts() != null) {
+            md.append("Applied discounts: ").append("\n");
+            config.getAppliedDiscounts().forEach((e) -> md.append("   ").append(e).append("\n"));
         }
         md.append("\n");
 

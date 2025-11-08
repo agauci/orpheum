@@ -61,6 +61,12 @@ orpheum:
             minimum-rate: 90
             cleaning-fee: 60
             launched-on: "2025-10-27"
+            applied-discounts:
+              ["last-minute-booking-within-upcoming-5-days: 15%",
+              "minimum-stay-of-at-least-5-days: 8%",
+              "minimum-stay-of-at-least-10-days: 12%",
+              "minimum-stay-of-at-least-14-days: 15%",
+              "minimum-stay-of-at-least-28-days: 17%"]
 
       # ============= GZIRA =============
 

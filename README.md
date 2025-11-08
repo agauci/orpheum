@@ -101,6 +101,7 @@ To view logs from set up service:
 ## Notes
 - To sniff traffic landing on unifi gateway related to dhcp, run this command: tcpdump -i br0 port 67 or port 68 -n -vv	
 - To verify when the certificate used by the orpheum agent expires:  openssl x509 -in fullchain.pem -noout -enddate
+- Restart nginx: nginx -s reload
 - Command to renew certificate
 - To obtain snapshot of gateway status: echo "=== CPU Usage ==="; mpstat 1 1 | awk '/Average:/ {print 100 - $12 "% used"}'; echo "=== Memory Usage ==="; free -h; echo "=== Disk Space ==="; df -h /
 - Initial testing seems to show that if the captive portal state API returns "captive": true, but the device is already authorised, the device will ignore the API direction and connect. This needs to be tested further.
