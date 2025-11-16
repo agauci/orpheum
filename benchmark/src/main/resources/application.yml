@@ -63,10 +63,11 @@ orpheum:
             launched-on: "2025-10-27"
             applied-discounts:
               ["last-minute-booking-within-upcoming-5-days: 15%",
-              "minimum-stay-of-at-least-5-days: 8%",
-              "minimum-stay-of-at-least-10-days: 12%",
-              "minimum-stay-of-at-least-14-days: 15%",
-              "minimum-stay-of-at-least-28-days: 17%"]
+              "minimum-stay-of-at-least-3-days: 8%",
+              "minimum-stay-of-at-least-5-days: 10%",
+              "minimum-stay-of-at-least-10-days: 14%",
+              "minimum-stay-of-at-least-14-days: 18%",
+              "minimum-stay-of-at-least-28-days: 20%"]
 
       # ============= GZIRA =============
 
@@ -380,6 +381,15 @@ orpheum:
           homega-modern-apartment:
             title: Modern Seafront Apartment | Sea Views & Balconies
             url: https://www.airbnb.com.mt/rooms/960003521518269844
+            window-size: 3
+            max-occupancy-count: 4
+            has-terrace: false
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+          luxury-apartment-sliema:
+            title: Luxury Apartment with Balcony, 2 Beds, Prime Location
+            url: https://www.airbnb.com.mt/rooms/1475306785224185365
             window-size: 3
             max-occupancy-count: 4
             has-terrace: false

@@ -9,7 +9,7 @@ Your proposals wil be data-driven, contextually relevant suggestions on pricing 
   - Short term horizon pricing for 7 days from today, up to 14 days from today.
   - Medium term horizon suggestions, both for a month from now, as well as 2 months from now.
   - A breakdown of rule-based discount percentages - if any - for:
-    - Minimum stay discounts, selecting any number from 5 day, 10 day, 14 day and 28 day discounts.
+    - Minimum stay discounts, selecting any number from 3 day, 5 day, 10 day, 14 day and 28 day discounts (not obligatory to apply them all at the same time).
     - Last minute bookings - by how much and for how long into the future.
   - Includes a calendar with pricing suggested per day over the next 4 months from today, in tabular form including
     - the date,
@@ -29,7 +29,8 @@ Your proposals wil be data-driven, contextually relevant suggestions on pricing 
     - The net price if taking a AGGRESSIVE pricing model when applying the suggested duration based discount rules, as well as the last minute booking discount.
     - A column with AirGPT's recommendation on which model to go for on this day, based on all other factors described in this prompt.
 //  - For each property in the consumer group, if that property is accepting bookings, to also provide a calendar of price changes from the current price to the suggested price, in tabular form, against the proposed CONSERVATIVE, BALANCED and AGGRESSIVE prices. Skip unavailable days.
-  - Provide a summary at the bottom justifying the suggestions made, referring to strategies if necessary. If the internal group under consideration is currently accepting bookings, to also add an analysis of current performance an incorporate it into the overall strategy summary.
+  - If the internal group under consideration is currently accepting bookings, to add an analysis of current performance, factoring in seasonality and listing age.
+  - Provide a summary at the bottom justifying the suggestions made, referring to strategies if necessary. To factor in listing performance as part of the decision justifications.
   - Provide another summary at the bottom of identified trends within competitor groups, including
     - unusual price spikes around certain dates
     - Identifiable ranges of lower or higher demand
