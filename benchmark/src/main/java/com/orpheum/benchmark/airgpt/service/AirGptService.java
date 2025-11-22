@@ -107,7 +107,7 @@ public class AirGptService {
 
     private OpenAiChatOptions buildChatOptions() {
         return OpenAiChatOptions.builder()
-                .model("gpt-5")
+                .model("gpt-5.1")
                 .responseFormat(new ResponseFormat(ResponseFormat.Type.JSON_SCHEMA, OUTPUT_CONVERTER.getJsonSchema()))
                 .reasoningEffort("high")
                 .temperature(1.0)
