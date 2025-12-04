@@ -431,7 +431,7 @@ public class CompetitorAnalysisService {
         String parentAriaLabel = parent.getDomAttribute("aria-label");
 
         if (parentAriaLabel != null &&
-                (parentAriaLabel.toLowerCase().contains("this day is only available for checkout") || parentAriaLabel.toLowerCase().contains("no eligible checkout date"))) {
+                (parentAriaLabel.toLowerCase().contains("this day is only available for checkout") || parentAriaLabel.toLowerCase().contains("no eligible checkout date") || parentAriaLabel.toLowerCase().contains("but not for check-in"))) {
             return false;
         }
 

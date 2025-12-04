@@ -122,9 +122,9 @@ orpheum:
             has-barbecue: false
             open-for-bookings: true
 
-      2bedroom-medium-finish-medium-amenities-gzira:
-        title: 2 bedroom properties in Gzira with medium finish, medium amenities, and terrace
-        description: A group for 2 bedroom properties in Gzira featuring medium-quality finishes and amenities, including a terrace.
+      1bedroom-medium-finish-medium-amenities-gzira:
+        title: 1 bedroom properties in Gzira with medium finish, medium amenities, and terrace
+        description: A group for 1 bedroom properties in Gzira featuring medium-quality finishes and amenities, including a terrace.
         is-internal-group: false
         location: Gzira
         bedroom-count: 2

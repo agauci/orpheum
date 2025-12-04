@@ -34,7 +34,7 @@ paths:
                 prompt:
                   type: string
                   description: The initial user prompt to start the conversation
-                  example: "Deliver on your mission to provide a pricing strategy for the internal group whose ID is provided, based on the information, rules and insights made available to you"
+                  example: "Deliver on your mission to provide a pricing strategy for the internal group whose ID is provided, based on the information, rules and insights made available to you. All information related to pricing constraints, listing status, occupancy, rates and rules are (amongst other information) available within the internal group's reports."
       responses:
         '200':
           description: Conversation started successfully
