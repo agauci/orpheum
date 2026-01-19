@@ -7,7 +7,7 @@ The following is the captive portal flow implemented across the backstage server
 1. The device connects to the UniFi gateway via a WiFi connection which is captive portal enabled.
 2. As part of its DHCP Options response, the gateway sends back a URL which the device is to query to discover if it has access to the WiFi network, or if it needs the to access a captive portal first. 
 	1. This is configured via the UniFi gateway portal under Settings -> Network -> Default -> DHCP Service Management -> Custom DHCP Options. The standard DHCP option number is 114 (See Evernote for more details).
-	2. The captive portal DHCP options url is of the form https://{{local_agent_url}}/.well-known/captive-portal
+	2. The captive portal DHCP options url is of the form https://{{local_agent_url}}/.well-known/captive-portal (for example https://teatru.orpheum.cloud/.well-known/captive-portal)
 	3. The UniFi gateway is configured so that the {{local_agent_url}} points to 192.168.1.1 (i.e. the gateway itself). Internally, the gateway's nginx instance is modded to point traffic hitting this domain to the Orpheum UniFi agent running inside, which in turn is running a lightweight server to serve this request.
 		1. This configuration is found under Routing -> DNS. Add a Host (A) entry.
 3. The Orpheum UniFi agent captures the device's assigned IP, which is forwarded by the gateway's internal nginx instance via header X-Forwarded-For. The server checks if this device is already authorised against its internal cache, and in doing so, returns whether the device should be redirected to a captive portal. The JSON response sent by this server is something of the following form:

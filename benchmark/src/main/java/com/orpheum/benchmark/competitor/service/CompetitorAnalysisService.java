@@ -165,6 +165,9 @@ public class CompetitorAnalysisService {
                 WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("button[aria-label='Close']")));
                 WebElement closeButton = driver.findElement(By.cssSelector("button[aria-label='Close']"));
+
+                Thread.sleep(1000);
+
                 closeButton.click();
             } catch (TimeoutException e) {
                 log.info("Unable to find close button within 10 seconds, skipping close button click");
@@ -351,7 +354,7 @@ public class CompetitorAnalysisService {
             // If the current window size is smaller than the minimum window size, then moving the calendar by one day during the next loop will not generate the
             // Minimum Stay: text, since it is still valid.
             await()
-                    .atMost(Duration.ofSeconds(10))
+                    .atMost(Duration.ofSeconds(20))
                     .pollInterval(Duration.ofMillis(500))
                     .until(() -> availabilityCalendar.getText().contains("Minimum stay") ||
                                     availabilityCalendar.getText().contains(start.year().toString()) ||
