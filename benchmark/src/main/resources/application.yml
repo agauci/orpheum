@@ -33,7 +33,7 @@ logging:
 
 orpheum:
   benchmark:
-    run-only:
+    run-only: 
     competitor-groups:
 
       # ============= INTERNAL =============
@@ -145,6 +145,24 @@ orpheum:
           conrad-penthouse-gzira:
             title: Luxury Penthouse with Large Terrace | Near the Sea
             url: https://www.airbnb.com.mt/rooms/1465118101841742723
+            window-size: 2
+            max-occupancy-count: 2
+            has-terrace: true
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+          mili-amazing-gzira:
+            title: Beautiful and amazing apartment
+            url: https://www.airbnb.com.mt/rooms/1181889346827922923?source_impression_id=p3_1765544221_P3_RSQ3bU2LK4VO7
+            window-size: 2
+            max-occupancy-count: 4
+            has-terrace: false
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+          juliet-ponsonby-gzira:
+            title: Juliet Residence PH - Modern Stays by SF Homes
+            url: https://www.airbnb.com.mt/rooms/1354464638690008751
             window-size: 2
             max-occupancy-count: 2
             has-terrace: true
@@ -343,8 +361,8 @@ orpheum:
         is-internal-group: false
         location: Sliema
         bedroom-count: 2
-        finishes-level: MEDIUM
-        amenities-level: MEDIUM
+        finishes-level: VERY_HIGH
+        amenities-level: HIGH
         view-level: PRIME_SEA_VIEW
         proximity-to-seafront: ON_SEAFRONT
         competitors:

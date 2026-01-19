@@ -162,7 +162,7 @@ public class CompetitorAnalysisService {
 
             // Wait for the page to load
             try {
-                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("button[aria-label='Close']")));
                 WebElement closeButton = driver.findElement(By.cssSelector("button[aria-label='Close']"));
                 closeButton.click();
@@ -366,6 +366,11 @@ public class CompetitorAnalysisService {
         }
 
         WebElement endCalendarElement = driver.findElement(By.cssSelector("div[data-testid='calendar-day-" + padNumber(end.month()) + "/" + padNumber(end.dayOfMonth()) + "/" + end.year() + "']"));
+
+        if (!isCheckoutAllowed(driver, endCalendarElement)) {
+            return new PriceExtractionResult(PriceExtractionOutcome.IMPOSSIBLE_SPAN, null, null, windowSize);
+        }
+
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", endCalendarElement);
 
         BigDecimal spanPrice = safelyExtractAmount(driver, windowSize, 0);
@@ -436,6 +441,23 @@ public class CompetitorAnalysisService {
         }
 
         return true;
+    }
+
+    private boolean isCheckoutAllowed(WebDriver driver, WebElement endCalendarElement) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        wait.until(d -> {
+            WebElement parent = endCalendarElement.findElement(By.xpath(".."));
+            String parentAriaLabel = parent.getDomAttribute("aria-label");
+
+            return parentAriaLabel != null &&
+                    (parentAriaLabel.contains("Select as checkout date") || parentAriaLabel.contains("but not for checkout"));
+        });
+
+        WebElement parent = endCalendarElement.findElement(By.xpath(".."));
+        String parentAriaLabel = parent.getDomAttribute("aria-label");
+
+        return parentAriaLabel.contains("Select as checkout date");
     }
 
     private void clickWithRobot(Integer xLocation, Integer yLocation) throws AWTException, InterruptedException {
