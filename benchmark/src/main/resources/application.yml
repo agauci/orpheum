@@ -33,7 +33,7 @@ logging:
 
 orpheum:
   benchmark:
-    run-only: 1bedroom-medium-finish-medium-amenities-gzira
+    run-only: 
     competitor-groups:
 
       # ============= INTERNAL =============

@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.awaitility.core.ConditionTimeoutException;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -353,13 +354,19 @@ public class CompetitorAnalysisService {
             final WebElement availabilityCalendar = driver.findElement(By.cssSelector("div[data-testid='availability-calendar-date-range']"));
             // If the current window size is smaller than the minimum window size, then moving the calendar by one day during the next loop will not generate the
             // Minimum Stay: text, since it is still valid.
-            await()
-                    .atMost(Duration.ofSeconds(20))
-                    .pollInterval(Duration.ofMillis(500))
-                    .until(() -> availabilityCalendar.getText().contains("Minimum stay") ||
-                                    availabilityCalendar.getText().contains(start.year().toString()) ||
-                                        availabilityCalendar.getText().contains("The closest available"));
-            Integer requiredWindowSize = extractMinimumWindowSize(availabilityCalendar.getText());
+            Integer requiredWindowSize = 1;
+            try {
+                await()
+                        .atMost(Duration.ofSeconds(20))
+                        .pollInterval(Duration.ofMillis(500))
+                        .until(() -> availabilityCalendar.getText().contains("Minimum stay") ||
+                                availabilityCalendar.getText().contains(start.year().toString()) ||
+                                availabilityCalendar.getText().contains("The closest available"));
+                requiredWindowSize = extractMinimumWindowSize(availabilityCalendar.getText());
+            } catch (ConditionTimeoutException e) {
+                log.warn("Failed to extract minimum window size for property {}, starting on date {}. Default to window size of 1.", competitorConfig.getKey(), start);
+            }
+
             if (requiredWindowSize >= windowSize) {
                 log.info("Extending window size to {} for property {}, starting on date {}", requiredWindowSize + 1, competitorConfig.getKey(), start);
                 return new PriceExtractionResult(PriceExtractionOutcome.BOOKING_WINDOW_TOO_SMALL, null, null, requiredWindowSize);
