@@ -80,10 +80,11 @@ public class CompetitorAnalysisService {
             if (latestCompetitorGroupReport.isPresent() && Duration.between(latestCompetitorGroupReport.get().getTimestampGenerated(), LocalDateTime.now()).toMinutes() < 1440) {
                 log.trace("Skipping group {} as it has been last processed at {}", groupKey, latestCompetitorGroupReport.get().getTimestampGenerated());
             } else {
-                log.debug("Starting processing of group {}", groupKey);
+                log.info("Starting processing of group {}", groupKey);
 
                 if (group.getCompetitors() != null && !group.getCompetitors().isEmpty()) {
                     group.getCompetitors().forEach((competitorKey, competitorConfig) -> {
+                        log.info("Started processing {}", competitorKey);
                         Pair<CompetitorStatistics, Map<Month, CalendarMonth>> competitorData = extractCompetitorData(competitorConfig);
                         
                         if (competitorData.getLeft() != null) {
@@ -115,7 +116,7 @@ public class CompetitorAnalysisService {
                     )
                 );
 
-                log.debug("Completed processing of group {}", groupKey);
+                log.info("Completed processing of group {}", groupKey);
             }
             groupPriceSpans.clear();
             competitorAnalysisData.clear();
@@ -167,7 +168,7 @@ public class CompetitorAnalysisService {
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("button[aria-label='Close']")));
                 WebElement closeButton = driver.findElement(By.cssSelector("button[aria-label='Close']"));
 
-                Thread.sleep(1000);
+                Thread.sleep(2000);
 
                 closeButton.click();
             } catch (TimeoutException e) {
@@ -321,6 +322,10 @@ public class CompetitorAnalysisService {
                     isProcessingComplete = true;
                 } else if (PriceExtractionOutcome.IMPOSSIBLE_SPAN.equals(priceExtractionResult.outcome())) {
                     log.info("Encountered impossible span for property {}, starting on date {}, with window size {}. Skipping.", competitorConfig.getKey(), start, appliedWindowSize);
+
+                    WebElement clearDateButton = driver.findElement(By.xpath("//button[contains(normalize-space(.), 'Clear date')]"));
+                    clearDateButton.click();
+
                     isProcessingComplete = true;
                 } else if (PriceExtractionOutcome.BOOKING_WINDOW_TOO_SMALL.equals(priceExtractionResult.outcome())) {
                     appliedWindowSize = priceExtractionResult.minimumWindowSize() + 1;
