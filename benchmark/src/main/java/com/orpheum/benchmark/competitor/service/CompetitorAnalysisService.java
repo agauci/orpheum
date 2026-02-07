@@ -173,6 +173,8 @@ public class CompetitorAnalysisService {
                 closeButton.click();
             } catch (TimeoutException e) {
                 log.info("Unable to find close button within 10 seconds, skipping close button click");
+            } catch (ElementNotInteractableException e) {
+                log.info("Unable to interact with close button, skipping close button click");
             }
 
             Thread.sleep(1000);
