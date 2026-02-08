@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.awaitility.core.ConditionTimeoutException;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -416,7 +417,7 @@ public class CompetitorAnalysisService {
             // Ensure that the amount being extracted is for the correct time span size
             new WebDriverWait(driver, Duration.ofSeconds(30))
                     .until(ExpectedConditions.presenceOfElementLocated(
-                            By.xpath("//div[@data-testid='book-it-default']//*[contains(text(), 'for " + (windowSize - 1) + " night')]")
+                            By.xpath("//div[@data-testid='book-it-default']//*[contains(text(), 'for " + (windowSize - 1) + " night') or contains(normalize-space(.), 'total')]")
                     ));
 
             WebElement price = new WebDriverWait(driver, Duration.ofSeconds(30))
@@ -468,7 +469,9 @@ public class CompetitorAnalysisService {
             String parentAriaLabel = parent.getDomAttribute("aria-label");
 
             return parentAriaLabel != null &&
-                    (parentAriaLabel.contains("Select as checkout date") || parentAriaLabel.contains("but not for checkout"));
+                    (parentAriaLabel.contains("Select as checkout date") ||
+                     parentAriaLabel.contains("but not for checkout") ||
+                     parentAriaLabel.contains("Unavailable"));
         });
 
         WebElement parent = endCalendarElement.findElement(By.xpath(".."));
