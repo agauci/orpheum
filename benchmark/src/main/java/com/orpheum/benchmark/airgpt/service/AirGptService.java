@@ -1,6 +1,5 @@
 package com.orpheum.benchmark.airgpt.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.orpheum.benchmark.airgpt.model.AirGptConversation;
 import com.orpheum.benchmark.airgpt.model.AirGptConversationOutcome;
 import com.orpheum.benchmark.airgpt.model.AirGptConversationPrompt;
@@ -107,7 +106,7 @@ public class AirGptService {
 
     private OpenAiChatOptions buildChatOptions() {
         return OpenAiChatOptions.builder()
-                .model("gpt-5.1")
+                .model("gpt-5.2")
                 .responseFormat(new ResponseFormat(ResponseFormat.Type.JSON_SCHEMA, OUTPUT_CONVERTER.getJsonSchema()))
                 .reasoningEffort("high")
                 .temperature(1.0)

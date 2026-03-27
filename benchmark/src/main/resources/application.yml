@@ -522,23 +522,23 @@ orpheum:
             has-barbecue: false
             open-for-bookings: true
 
-      2bedroom-high-finish-high-amenities-side-sea-view-with-terrace-st-julians:
-        title: 2 bedroom properties in St. Julians with high finish, high amenities, terrace, and side sea view
-        description: A group for 2 bedroom properties in St. Julians featuring high-quality finishes and high-level amenities, with a terrace and a side sea view.
-        is-internal-group: false
-        location: St Julians
-        bedroom-count: 2
-        finishes-level: HIGH
-        amenities-level: HIGH
-        view-level: SIDE_SEA_VIEW
-        proximity-to-seafront: NOT_CLOSE
-        competitors:
-          nevermind-designer-escape-stjulians:
-            title: Designer seaview escape in the heart of St Julians
-            url: https://www.airbnb.com.mt/rooms/855756261352234158
-            window-size: 2
-            max-occupancy-count: 4
-            has-terrace: true
-            has-pool: false
-            has-barbecue: false
-            open-for-bookings: true
+#      2bedroom-high-finish-high-amenities-side-sea-view-with-terrace-st-julians:
+#        title: 2 bedroom properties in St. Julians with high finish, high amenities, terrace, and side sea view
+#        description: A group for 2 bedroom properties in St. Julians featuring high-quality finishes and high-level amenities, with a terrace and a side sea view.
+#        is-internal-group: false
+#        location: St Julians
+#        bedroom-count: 2
+#        finishes-level: HIGH
+#        amenities-level: HIGH
+#        view-level: SIDE_SEA_VIEW
+#        proximity-to-seafront: NOT_CLOSE
+#        competitors:
+#          nevermind-designer-escape-stjulians:
+#            title: Designer seaview escape in the heart of St Julians
+#            url: https://www.airbnb.com.mt/rooms/855756261352234158
+#            window-size: 2
+#            max-occupancy-count: 4
+#            has-terrace: true
+#            has-pool: false
+#            has-barbecue: false
+#            open-for-bookings: true
