@@ -242,26 +242,26 @@ orpheum:
             has-barbecue: false
             open-for-bookings: true
 
-      3bedroom-high-finish-high-amenities-with-view-gzira:
-        title: 3 bedroom properties in Gzira with high finish, high amenities, and skyline view
-        description: A group for 3 bedroom properties in Gzira featuring high-quality finishes and high-level amenities, offering attractive skyline views.
-        is-internal-group: false
-        location: Gzira
-        bedroom-count: 3
-        finishes-level: HIGH
-        amenities-level: MEDIUM
-        view-level: SKYLINE_VIEW
-        proximity-to-seafront: NOT_CLOSE
-        competitors:
-          nevermind-city-skyline-penthouse:
-            title: City Skyline Penthouse with Large Terrace & Views
-            url: https://www.airbnb.com.mt/rooms/1330533685950557724
-            window-size: 2
-            max-occupancy-count: 6
-            has-terrace: true
-            has-pool: false
-            has-barbecue: false
-            open-for-bookings: true
+#      3bedroom-high-finish-high-amenities-with-view-gzira:
+#        title: 3 bedroom properties in Gzira with high finish, high amenities, and skyline view
+#        description: A group for 3 bedroom properties in Gzira featuring high-quality finishes and high-level amenities, offering attractive skyline views.
+#        is-internal-group: false
+#        location: Gzira
+#        bedroom-count: 3
+#        finishes-level: HIGH
+#        amenities-level: MEDIUM
+#        view-level: SKYLINE_VIEW
+#        proximity-to-seafront: NOT_CLOSE
+#        competitors:
+#          nevermind-city-skyline-penthouse:
+#            title: City Skyline Penthouse with Large Terrace & Views
+#            url: https://www.airbnb.com.mt/rooms/1330533685950557724
+#            window-size: 2
+#            max-occupancy-count: 6
+#            has-terrace: true
+#            has-pool: false
+#            has-barbecue: false
+#            open-for-bookings: true
 
       # ============= SLIEMA =============
 
