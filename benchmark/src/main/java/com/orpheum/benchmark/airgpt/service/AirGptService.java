@@ -25,6 +25,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.*;
 
 @Service
@@ -109,6 +110,7 @@ public class AirGptService {
                 .model("gpt-5.2")
                 .responseFormat(OpenAiChatModel.ResponseFormat.builder().type(OpenAiChatModel.ResponseFormat.Type.JSON_SCHEMA).jsonSchema(OUTPUT_CONVERTER.getJsonSchema()).build())
                 .reasoningEffort("high")
+                .timeout(Duration.ofMinutes(60))
                 .temperature(1.0);
     }
 
