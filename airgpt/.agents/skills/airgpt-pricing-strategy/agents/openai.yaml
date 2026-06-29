@@ -1,0 +1,4 @@
+interface:
+  display_name: "AirGPT Pricing Strategy"
+  short_description: "Generate STR pricing strategies from AirGPT reports"
+  default_prompt: "Use $airgpt-pricing-strategy to generate a pricing strategy for internalGroupId 1bedroom-very-high-finish-very-high-amenities-side-sea-view-gzira."

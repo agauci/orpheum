@@ -17,8 +17,8 @@ import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.converter.BeanOutputConverter;
+import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
-import org.springframework.ai.openai.api.ResponseFormat;
 import org.springframework.ai.template.st.StTemplateRenderer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -62,7 +62,7 @@ public class AirGptService {
 
     private AirGptConversationOutcome processPrompt(UUID conversationId, String userPrompt, String internalGroupId, boolean isNewConversation) {
         final String text = generateAirGptPromptText(isNewConversation, internalGroupId, conversationId);
-        final OpenAiChatOptions chatOptions = buildChatOptions();
+        final OpenAiChatOptions.Builder chatOptions = buildChatOptions();
         final Long startTime = System.currentTimeMillis();
 
         // Get response from LLM
@@ -84,7 +84,7 @@ public class AirGptService {
             conversationRepository.save(AirGptConversation.create(conversationId, extractionOutcome.conversationTitle(), internalGroupId).markAsNew());
         }
 
-        decoratePromptWithLlmOutcome(conversationId, extractionOutcome, System.currentTimeMillis() - startTime, chatOptions);
+        decoratePromptWithLlmOutcome(conversationId, extractionOutcome, System.currentTimeMillis() - startTime, chatOptions.build());
 
         return new AirGptConversationOutcome(conversationId, extractionOutcome);
     }
@@ -104,13 +104,12 @@ public class AirGptService {
                 .replaceAll("//[^\\r\\n]*(\\r?\\n)?", "");
     }
 
-    private OpenAiChatOptions buildChatOptions() {
+    private OpenAiChatOptions.Builder buildChatOptions() {
         return OpenAiChatOptions.builder()
                 .model("gpt-5.2")
-                .responseFormat(new ResponseFormat(ResponseFormat.Type.JSON_SCHEMA, OUTPUT_CONVERTER.getJsonSchema()))
+                .responseFormat(OpenAiChatModel.ResponseFormat.builder().type(OpenAiChatModel.ResponseFormat.Type.JSON_SCHEMA).jsonSchema(OUTPUT_CONVERTER.getJsonSchema()).build())
                 .reasoningEffort("high")
-                .temperature(1.0)
-                .build();
+                .temperature(1.0);
     }
 
     private void decoratePromptWithLlmOutcome(UUID conversationId, AirGptLlmOutcome outcome, Long promptDuration, OpenAiChatOptions chatOptions) {

@@ -2,7 +2,7 @@ package com.orpheum.benchmark.airgpt.model;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.orpheum.benchmark.model.AbstractEntity;
 import lombok.Value;
 import lombok.With;

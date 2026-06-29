@@ -25,8 +25,8 @@ public class CompetitorReportGenerator {
         md.append("Group description: ").append(competitorGroup.getDescription()).append("\n");
         md.append("Is internal group: ").append(competitorGroup.getIsInternalGroup()).append("\n");
         md.append("Location: ").append(competitorGroup.getLocation()).append("\n");
-        md.append("Proximity to the seafront: ").append(competitorGroup.getProximityToSeafront()).append("\n");
         md.append("Bedroom count: ").append(competitorGroup.getBedroomCount()).append("\n");
+        md.append("Proximity to the seafront: ").append(competitorGroup.getProximityToSeafront()).append("\n");
         md.append("Finishes level: ").append(competitorGroup.getFinishesLevel()).append("\n");
         md.append("Amenities level: ").append(competitorGroup.getAmenitiesLevel()).append("\n");
         md.append("View level: ").append(competitorGroup.getViewLevel()).append("\n\n");

@@ -1,14 +1,12 @@
 package com.orpheum.benchmark.airgpt.service.tools;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.orpheum.benchmark.airgpt.service.AirGptChatMemory;
 import com.orpheum.benchmark.competitor.model.AggregateCompetitorGroupReport;
 import com.orpheum.benchmark.competitor.service.CompetitorAnalysisService;
 import com.orpheum.benchmark.competitor.support.HtmlContentExtractor;
 import com.orpheum.benchmark.competitor.support.UUIDs;
-import com.orpheum.benchmark.config.BenchmarkConfig;
 import com.orpheum.benchmark.config.BenchmarkProperties;
 import com.orpheum.benchmark.config.CompetitorGroup;
 import lombok.RequiredArgsConstructor;
@@ -93,11 +91,7 @@ public class AirGptTools {
                     if (aggregateCompetitorGroupReport.competitorGroupReport() == null) {
                         return "Unable to resolve a competitor group report on this day. Make sure that you pick a date with an available report as defined by tool getConsumeGroupAvailableReportDays.";
                     } else {
-                        try {
-                            return objectMapper.writeValueAsString(aggregateCompetitorGroupReport);
-                        } catch (JsonProcessingException e) {
-                            throw new RuntimeException(e);
-                        }
+                        return objectMapper.writeValueAsString(aggregateCompetitorGroupReport);
                     }
                 },
                 conversationId,
@@ -112,8 +106,8 @@ public class AirGptTools {
     }
 
     @Tool(description = "Returns the days when a report is available for the provided competitor group")
-    List<LocalDate> getConsumeGroupAvailableReportDays(@ToolParam(description = "The conversation ID in UUID format") String conversationId,
-                                                       @ToolParam(description = "The competitor group ID whose report day availability is required") String competitorGroupId) {
+    List<LocalDate> getConsumerGroupAvailableReportDays(@ToolParam(description = "The conversation ID in UUID format") String conversationId,
+                                                        @ToolParam(description = "The competitor group ID whose report day availability is required") String competitorGroupId) {
         return processToolCall(
                 () -> competitorAnalysisService.getAvailableReportDays(competitorGroupId),
                 conversationId,
@@ -121,7 +115,7 @@ public class AirGptTools {
                         param("conversationId"), conversationId,
                         param("competitorGroupId"), competitorGroupId
                 ),
-                "getConsumeGroupAvailableReportDays",
+                "getConsumerGroupAvailableReportDays",
                 false
         );
     }
@@ -136,14 +130,14 @@ public class AirGptTools {
             long initialTime = System.currentTimeMillis();
             Optional<UUID> conversationIdUuid = processConversationId(conversationId);
 
-
             T result = responseValue.get();
 
             conversationIdUuid.ifPresent(uuid -> {
-                chatMemory.add(conversationId, new ToolResponseMessage(
-                        List.of(new ToolResponseMessage.ToolResponse("1", toolName, (storeOutcome) ? result.toString() : "")),
-                        requestParams
-                ));
+                chatMemory.add(conversationId, ToolResponseMessage.builder()
+                                .responses(List.of(new ToolResponseMessage.ToolResponse("1", toolName, (storeOutcome) ? result.toString() : "")))
+                        .metadata(requestParams)
+                        .build()
+                );
             });
 
             log.debug("Completed processing tool call for conversation {} [Name: {}, Duration: {} ms]", conversationId, toolName, System.currentTimeMillis() - initialTime);

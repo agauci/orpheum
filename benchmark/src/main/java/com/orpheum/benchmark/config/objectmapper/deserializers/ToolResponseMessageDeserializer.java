@@ -1,13 +1,12 @@
 package com.orpheum.benchmark.config.objectmapper.deserializers;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.deser.std.StdDeserializer;
 import org.springframework.ai.chat.messages.ToolResponseMessage;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,14 +17,13 @@ public class ToolResponseMessageDeserializer extends StdDeserializer<ToolRespons
     }
 
     @Override
-    public ToolResponseMessage deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        ObjectMapper mapper = (ObjectMapper) p.getCodec();
-        JsonNode node = mapper.readTree(p.getValueAsString());
+    public ToolResponseMessage deserialize(JsonParser p, DeserializationContext ctxt){
+        JsonNode node = p.readValueAsTree();
 
         // --- Extract metadata ---
         JsonNode metadataNode = node.get("metadata");
         Map<String, Object> metadata = metadataNode != null
-                ? mapper.convertValue(metadataNode, Map.class)
+                ? ctxt.readTreeAsValue(metadataNode, Map.class)
                 : Map.of();
 
         // --- Extract responses ---
@@ -40,6 +38,6 @@ public class ToolResponseMessageDeserializer extends StdDeserializer<ToolRespons
                 responses.add(new ToolResponseMessage.ToolResponse(id, name, responseData));
             }
         }
-        return new ToolResponseMessage(responses, metadata);
+        return ToolResponseMessage.builder().responses(responses).metadata(metadata).build();
     }
 }

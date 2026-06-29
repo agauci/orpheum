@@ -1,6 +1,6 @@
 package com.orpheum.benchmark.config.db;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.orpheum.benchmark.config.db.converters.JsonNodeToPgObjectConverter;
 import com.orpheum.benchmark.config.db.converters.PgObjectToJsonNodeConverter;
 import org.springframework.beans.factory.annotation.Autowired;

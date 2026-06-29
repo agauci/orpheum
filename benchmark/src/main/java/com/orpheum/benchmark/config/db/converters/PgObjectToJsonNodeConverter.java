@@ -1,8 +1,7 @@
 package com.orpheum.benchmark.config.db.converters;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import org.postgresql.util.PGobject;
 import org.springframework.core.convert.converter.Converter;
 
@@ -20,10 +19,6 @@ public class PgObjectToJsonNodeConverter implements Converter<PGobject, JsonNode
             return objectMapper.nullNode();
         }
 
-        try {
-            return objectMapper.readTree(source.getValue());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to convert PGobject to JsonNode", e);
-        }
+        return objectMapper.readTree(source.getValue());
     }
 }

@@ -3,7 +3,7 @@ spring:
     name: benchmark
   datasource:
     url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/orpheum-benchmark?sslmode=disable}
-    username: ${POSTGRES_USER:postgres}
+    username: postgres
     password: ${POSTGRES_PASSWORD:root}
     driver-class-name: org.postgresql.Driver
     hikari:
@@ -20,6 +20,12 @@ spring:
         enabled: false
     openai:
       api-key: ${OPENAI_API_KEY}
+    mcp:
+      server:
+        name: AirGPT tools
+        version: 1.0.0
+        protocol: STATELESS
+        type: sync
 logging:
   level:
     root: INFO                  # Root logger level
@@ -118,6 +124,27 @@ orpheum:
             window-size: 3
             max-occupancy-count: 3
             has-terrace: false
+            has-pool: false
+            has-barbecue: false
+            open-for-bookings: true
+
+      1bedroom-high-finish-high-amenities-seafront-view-gzira:
+        title: 1 Bedroom Properties In Gzira Of high quality finish and good amenities with seafront view
+        description: A group of competitors in the Gzira area having 1 bedroom, high level of design & finishes, high amenities, and seafront views.
+        is-internal-group: false
+        location: Gzira
+        bedroom-count: 1
+        finishes-level: HIGH
+        amenities-level: HIGH
+        view-level: PRIME_SEA_VIEW
+        proximity-to-seafront: ON_SEAFRONT
+        competitors:
+          modern-levelstay-seafront-gzira-apartment:
+            title: Seafront Brandnew Apt.! | Manoel Island | Gzira
+            url: https://www.airbnb.com.mt/rooms/1399922929714140022
+            window-size: 2
+            max-occupancy-count: 4
+            has-terrace: true
             has-pool: false
             has-barbecue: false
             open-for-bookings: true

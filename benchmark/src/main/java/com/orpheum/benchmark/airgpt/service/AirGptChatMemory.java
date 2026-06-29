@@ -1,8 +1,7 @@
 package com.orpheum.benchmark.airgpt.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import com.orpheum.benchmark.airgpt.model.AirGptConversationPrompt;
 import com.orpheum.benchmark.airgpt.model.AirGptLlmOutcome;
 import com.orpheum.benchmark.airgpt.repository.AirGptConversationPromptRepository;
@@ -29,18 +28,14 @@ public class AirGptChatMemory implements ChatMemory {
             messages.stream()
                 .map(message ->
                         {
-                            try {
-                                return AirGptConversationPrompt.create(
-                                        UUIDs.create(),
-                                        UUIDs.fromString(conversationId),
-                                        objectMapper.writeValueAsString(message),
-                                        extractText(message),
-                                        extractStructuredOutput(message),
-                                        message.getMessageType()
-                                ).markAsNew();
-                            } catch (JsonProcessingException e) {
-                                throw new RuntimeException("Unable to process prompt for conversation " + conversationId);
-                            }
+                            return AirGptConversationPrompt.create(
+                                    UUIDs.create(),
+                                    UUIDs.fromString(conversationId),
+                                    objectMapper.writeValueAsString(message),
+                                    extractText(message),
+                                    extractStructuredOutput(message),
+                                    message.getMessageType()
+                            ).markAsNew();
                         }
                 )
                 .toList()
@@ -70,7 +65,7 @@ public class AirGptChatMemory implements ChatMemory {
         };
     }
 
-    private String extractText(Message message) throws JsonProcessingException {
+    private String extractText(Message message) {
         return switch (message.getMessageType()) {
             case USER -> message.getText();
             case ASSISTANT -> objectMapper.readValue(message.getText(), AirGptLlmOutcome.class).assistantMessage();
@@ -79,7 +74,7 @@ public class AirGptChatMemory implements ChatMemory {
         };
     }
 
-    private JsonNode extractStructuredOutput(Message message) throws JsonProcessingException {
+    private JsonNode extractStructuredOutput(Message message) {
         return switch (message.getMessageType()) {
             case USER -> null;
             case ASSISTANT -> objectMapper.readTree(message.getText());
