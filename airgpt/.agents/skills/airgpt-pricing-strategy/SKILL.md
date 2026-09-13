@@ -1,6 +1,6 @@
 ---
 name: airgpt-pricing-strategy
-description: "Generate AirGPT short-term rental pricing strategy reports from internal group and competitor report MCP tools. Use when the user asks for a pricing strategy, AirGPT report, STR revenue recommendation, competitor-informed pricing calendar, or pricing rules for an internalGroupId in the Maltese short-term rental market."
+description: "Generate AirGPT short-term rental pricing strategy markdown report files from internal group and competitor report MCP tools. Use when the user asks for a pricing strategy, AirGPT report, STR revenue recommendation, competitor-informed pricing calendar, or pricing rules for an internalGroupId in the Maltese short-term rental market."
 ---
 
 # AirGPT Pricing Strategy
@@ -93,7 +93,7 @@ The generated strategy must cover:
 
 ## Four-Month Calendar Columns
 
-In the `assistantMessage`, include a markdown table for the next 4 months with one row per date. Include these columns:
+In the generated markdown report file, include a markdown table for the next 4 months with one row per date. Include these columns:
 
 - Date.
 - Day of week.
@@ -174,6 +174,7 @@ Strategies to apply when justified:
 - Competitor-based market demand and pricing: use competitor price and availability trends to infer demand and target levels.
 - Competitor boundaries: finish level, amenity level, view, pool, seafront proximity, locality, and terrace can materially shift achievable price.
 - Competitor timeline trends: treat repeated availability drops and price spikes around dates as signals of enhanced demand.
+- Stale near-term inventory: when internal dates have remained open across multiple snapshots, or the user reports that close dates have been available for a while without selling, do not rely on peak-season strength alone. Compare same-date competitor momentum: if lower-priced/lower-quality stock is selling but premium or mid-premium comps stay open or cut rates, switch those internal dates to conversion-rescue pricing, narrow weekend premiums, and targeted last-minute discounts while preserving the minimum net rate and quality signal.
 - High-season strategy: Price to be booked after lower-quality competitors, while remaining sufficiently competitive to achieve strong occupancy before season end.
 - Low-season strategy: price competitively to be booked relatively early.
 - Adjacency discounts: suppress awkward open nights before an existing check-in or after an existing check-out, except on Friday and Saturday.
@@ -181,10 +182,28 @@ Strategies to apply when justified:
 - Search visibility: Search visibility is a first-class objective. Apply known knowledge around the Airbnb search algorithm to ensure this target.
 - Rankings and reviews: When listings have few reviews, low booking velocity, or weak search positioning, temporarily favor occupancy and conversion over ADR optimization. Once review volume and ranking stabilize, gradually transition toward balanced or aggressive strategies. Early bookings and positive reviews are strategic assets whose long-term value may outweigh short-term ADR optimisation. 
 
-## Response Contract
+## File Output Contract
 
-Return exactly one valid markdown report including:
-- assistantMessage: Markdown-formatted human-readable response or error/question.
-- assistantContext: Markdown-formatted checklist, accrued information, and any further rationale.
+When enough information exists to generate the pricing strategy, write the final result to a markdown file instead of returning the full report in chat.
+
+Name the file exactly:
+
+```text
+<internalGroupId>__dd_mm_yy_hh_mm.md
+```
+
+Use the provided `internalGroupId` as the first filename segment. Use the current date/time retrieved from the AirGPT current-time tool for the timestamp segment. Format the timestamp as two-digit day, month, year, hour, and minute. If the tool returns UTC, use UTC for the filename unless the user explicitly provides another timezone. If the `internalGroupId` contains characters that are invalid in filenames, replace only those invalid characters with `-` and mention the sanitized filename in the final chat response.
+
+Place the file in `./Pricing Reports` unless the user provides an output directory. If this directory is not writable, use the nearest writable project directory and state the path.
+
+The markdown file must contain:
+
+- A title naming the internal group and report timestamp.
+- The full pricing strategy report, including all required tables and summaries.
+- An `assistantContext` section containing the markdown checklist, accrued information, assumptions, data sources, competitor group weights, pricing constraints, calculation summaries, confidence level, and rationale.
+
+After writing the file, respond in chat with only a concise completion note and the file path. Do not duplicate the report body in chat.
+
+If a required user answer or missing internal constraint prevents responsible pricing, do not create a report file yet. Ask the missing question concisely in chat.
 
 Keep narrative concise and focused, but include all required tables and summaries.

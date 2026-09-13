@@ -240,7 +240,7 @@ orpheum:
             open-for-bookings: true
           refined-elegance:
             title: Refined Elegance By The Sea
-            url: https://www.airbnb.com.mt/rooms/1405209871580505002
+            url: https://www.airbnb.com.mt/rooms/1423992450716957098
             window-size: 3
             max-occupancy-count: 4
             has-terrace: false
@@ -393,15 +393,15 @@ orpheum:
         view-level: PRIME_SEA_VIEW
         proximity-to-seafront: ON_SEAFRONT
         competitors:
-          homega-tropical-apartment:
-            title: Designer Penthouse | Private Pool & Valletta Views
-            url: https://www.airbnb.com.mt/rooms/934677713926963612
-            window-size: 4
-            max-occupancy-count: 4
-            has-terrace: true
-            has-pool: true
-            has-barbecue: false
-            open-for-bookings: true
+#          homega-tropical-apartment:
+#            title: Designer Penthouse | Private Pool & Valletta Views
+#            url: https://www.airbnb.com.mt/rooms/934677713926963612
+#            window-size: 4
+#            max-occupancy-count: 4
+#            has-terrace: true
+#            has-pool: true
+#            has-barbecue: false
+#            open-for-bookings: true
           homega-tropical-apartment-v2:
             title: Skyline Apartment | Private Pool & Valletta Views
             url: https://www.airbnb.com.mt/rooms/939043642998556893
@@ -528,26 +528,26 @@ orpheum:
             has-barbecue: false
             open-for-bookings: true
 
-      2bedroom-high-finish-medium-amenities-no-view-with-terrace-close-to-seafront-st-julians:
-        title: 2 bedroom properties in St. Julians with high finish, medium amenities, and terrace, near the seafront
-        description: A group for 2 bedroom properties in St. Julians featuring high-quality finishes and medium-level amenities, including a terrace, located close to the seafront.
-        is-internal-group: false
-        location: St Julians
-        bedroom-count: 2
-        finishes-level: HIGH
-        amenities-level: MEDIUM
-        view-level: NONE
-        proximity-to-seafront: CLOSE
-        competitors:
-          giuseppe-2bedroom-stjulians-apt:
-            title: Garden View 9 - 2 Bedroom Apt.
-            url: https://www.airbnb.com.mt/rooms/1048470926159422987
-            window-size: 2
-            max-occupancy-count: 4
-            has-terrace: true
-            has-pool: false
-            has-barbecue: false
-            open-for-bookings: true
+#      2bedroom-high-finish-medium-amenities-no-view-with-terrace-close-to-seafront-st-julians:
+#        title: 2 bedroom properties in St. Julians with high finish, medium amenities, and terrace, near the seafront
+#        description: A group for 2 bedroom properties in St. Julians featuring high-quality finishes and medium-level amenities, including a terrace, located close to the seafront.
+#        is-internal-group: false
+#        location: St Julians
+#        bedroom-count: 2
+#        finishes-level: HIGH
+#        amenities-level: MEDIUM
+#        view-level: NONE
+#        proximity-to-seafront: CLOSE
+#        competitors:
+#          giuseppe-2bedroom-stjulians-apt:
+#            title: Garden View 9 - 2 Bedroom Apt.
+#            url: https://www.airbnb.com.mt/rooms/1048470926159422987
+#            window-size: 2
+#            max-occupancy-count: 4
+#            has-terrace: true
+#            has-pool: false
+#            has-barbecue: false
+#            open-for-bookings: true
 
 #      2bedroom-high-finish-high-amenities-side-sea-view-with-terrace-st-julians:
 #        title: 2 bedroom properties in St. Julians with high finish, high amenities, terrace, and side sea view

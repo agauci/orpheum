@@ -1,0 +1,4 @@
+interface:
+  display_name: "Public Review Responses"
+  short_description: "Draft warm host replies to guest reviews"
+  default_prompt: "Use $respond-public-reviews to draft a host response for this guest review."
