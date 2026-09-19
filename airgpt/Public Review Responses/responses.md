@@ -1,3 +1,22 @@
+# Adele
+
+Guest review:
+"Wow" doesn't even begin to do this penthouse justice. It’s immediately clear how much heart, thought, and effort Emily and Andrew have poured into creating this space. The interior design is truly top-notch.\
+The attention to detail throughout the entire apartment made this the ultimate getaway, and their House Manual is honestly the best we’ve ever seen. From the moment we arrived, Emily and Andrew were attentive, welcoming, and endlessly helpful.\
+If you're on the fence, just book it, you really need to experience it firsthand. We can't thank them enough for such an unforgettable stay and would recommend this place in a heartbeat!  
+
+Stars (Out of 5):
+5
+
+Host response:
+Thank you, Adele, for such a generous and heartfelt review! Reading that “wow” doesn’t even begin to do the penthouse justice truly made our day. We have poured so much care into creating a space where guests can feel welcomed and completely at home, and we’re really happy that came through during your stay.
+
+We’re also so glad the House Manual stood out and that you felt well looked after from the moment you arrived. We’re truly grateful that you chose to stay with us and recommended the penthouse so wholeheartedly.
+
+It was a real pleasure hosting you, and we would love to welcome you back for another memorable Malta visit.
+
+---
+
 # Erick
 
 Guest review:
