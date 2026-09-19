@@ -39,7 +39,7 @@ logging:
 
 orpheum:
   benchmark:
-    run-only: 
+    run-only:
     competitor-groups:
 
       # ============= INTERNAL =============
