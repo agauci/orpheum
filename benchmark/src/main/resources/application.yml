@@ -229,15 +229,15 @@ orpheum:
         view-level: NONE
         proximity-to-seafront: CLOSE
         competitors:
-          good-vibes:
-            title: Steps from the Seafront - Good vibes only!
-            url: https://www.airbnb.com.mt/rooms/1378332450577754619
-            window-size: 3
-            max-occupancy-count: 4
-            has-terrace: false
-            has-pool: false
-            has-barbecue: false
-            open-for-bookings: true
+#          good-vibes:
+#            title: Steps from the Seafront - Good vibes only!
+#            url: https://www.airbnb.com.mt/rooms/1378332450577754619
+#            window-size: 3
+#            max-occupancy-count: 4
+#            has-terrace: false
+#            has-pool: false
+#            has-barbecue: false
+#            open-for-bookings: true
           refined-elegance:
             title: Refined Elegance By The Sea
             url: https://www.airbnb.com.mt/rooms/1423992450716957098
